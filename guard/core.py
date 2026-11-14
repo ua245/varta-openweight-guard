@@ -55,6 +55,11 @@ class Guard:
             elif d.action != "allow" and self.secrets.has_placeholder(args):
                 d = deny(d.reason + "; secrets are only injected for allowlisted hosts")
             return d
+        if tool in ("tavily_search", "verify_claim"):
+            # Allowlisted research path (Tavily). Still untrusted content → taints session.
+            if not args.get("query") and not args.get("claim"):
+                return deny(f"{tool} requires query or claim")
+            return allow(args)
         if tool in self.taint.untrusted:
             return allow(args)                         # e.g. read_github_issue: allowed, taints
         return deny(f"unknown tool '{tool}'")

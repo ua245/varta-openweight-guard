@@ -15,5 +15,6 @@ class Taint:
 
 
 def _short(args):
-    s = ", ".join(f"{k}={v}" for k, v in args.items() if k in ("url", "path", "repo", "number"))
+    keys = ("url", "path", "repo", "number", "issue", "query", "claim", "cmd")
+    s = ", ".join(f"{k}={v}" for k, v in args.items() if k in keys)
     return s[:120]

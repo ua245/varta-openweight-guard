@@ -44,11 +44,15 @@ def test_legit_fix_still_allowed_after_taint(guard, project):
 
 
 def test_path_tricks_blocked(guard, project):
-    (project / "link").symlink_to(project / ".env")
     assert not guard.check("read_file", {"path": "bank/../.env"}).allowed
-    assert not guard.check("read_file", {"path": "link"}).allowed
     assert not guard.check("write_file", {"path": "../outside.py", "content": "x"}).allowed
     assert not guard.check("read_file", {"path": "~/.ssh/id_rsa"}).allowed
+    try:
+        (project / "link").symlink_to(project / ".env")
+    except OSError as e:
+        # Windows without Developer Mode / SeCreateSymbolicLinkPrivilege
+        pytest.skip(f"symlink not permitted on this host: {e}")
+    assert not guard.check("read_file", {"path": "link"}).allowed
 
 
 def test_tainted_session_blocks_push_and_install(guard):

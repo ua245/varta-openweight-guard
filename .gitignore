@@ -2,4 +2,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 audit.jsonl
+audit_proxy_test.jsonl
+audit_tavily_test.jsonl
 .env
+llm_map.json
+llm-map/target/
+_write_*.py
+_fix_*.py

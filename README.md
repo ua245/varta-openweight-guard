@@ -2,23 +2,90 @@
 
 Open-weight coding agents get no safety layer by default. This guard gives a local coding agent the protections closed models ship with, so it can run autonomously without being hijacked by prompt injection.
 
+
+## Competition tracks (Imperial AI Hack)
+
+**Main track:** Autonomous Agents — agents that research, write/run code, and finish multi-step tasks reliably.
+
+**Bounty (enter up to 2 from this track):** Best use of Tavily — this repo's flagship Tavily feature is a **stale-answer detector** (`verify_claim`) plus guarded **`tavily_search`** research inside the proxy. Agents must not scrape arbitrary hosts; live web evidence comes through Tavily with citations.
+
+Judging fit: works (guarded tool path + CI), technical depth (deterministic guard + Rust discovery + proxy), usefulness (open-weight agents get closed-model style protections + fresh web checks).
+
 **Approach: prevention, not detection.** We do not try to spot injections, because a good one looks benign. We assume the model *will* be fooled, and make sure a fooled agent cannot do damage.
+
+
+## Prerequisites
+
+- Python 3.11+ (`python`, not only `python3` — on Windows use `python -m …`)
+- For Step 1 (`llm-map`): Rust toolchain (`rustup`). On Windows also **VS Build Tools** (MSVC `link.exe`)
+- Optional live LLM: any OpenAI-compatible local server (Ollama, vLLM, llama.cpp, …) before running `llm-map`
+- Optional Tavily: set `TAVILY_API_KEY` (see `.env.example`) for live search / verify; unit tests mock Tavily
+
+**Proxy-only demo (no LLM, no Rust):** `pip install -r requirements.txt` then `python -m proxy`. Tool gate works; `POST /v1/chat/completions` returns 503 until `llm_map.json` has a backend.
+
+## Canonical boot: 2 steps
+
+**`proxy/` is THE product surface.** All future coding agents implement features there — not in ad-hoc loops, not as advisory-only hooks. Agents set `base_url` to the proxy and never call backends from `llm_map.json` directly. See [`proxy/AGENT_CONTRACT.md`](proxy/AGENT_CONTRACT.md).
+
+### Step 1 — map local open-weight LLMs (`llm-map/`)
+
+Rust inventory of local open-weight / OSS LLM processes. Writes `llm_map.json`. No policy enforcement.
+
+```bash
+cargo run --manifest-path llm-map/Cargo.toml
+# → llm_map.json (pid, ports, base_url, models, openai_compatible)
+```
+
+### Step 2 — run THE proxy (`proxy/`)
+
+Loads the map, serves an OpenAI-compatible façade, and routes every tool call through `guard.Guard.check`.
+
+```bash
+pip install -r requirements.txt
+python -m proxy
+# → http://127.0.0.1:8787
+# GET  /health  /v1/map  /v1/models
+# POST /v1/chat/completions   (forwards to mapped backend)
+# POST /v1/tools/execute      (mandatory tool gate)
+```
+
+```
+[local LLMs] --discovered by--> [llm-map] --> llm_map.json
+                                              │
+[coding agent] --base_url--> [PROXY] <--------+
+                                │
+                           Guard.check
+                                │
+                     files / shell / network
+                                │
+                           audit.jsonl
+```
+
+Hooks (if any) may observe the proxy; they are not the security boundary. The proxy is.
 
 ## Setup
 
 | Component | Choice |
 |---|---|
 | Model server | Ubuntu 24.04, GLM 5.2, OpenAI-compatible API (`/v1/chat/completions` with tool calling) |
-| Agent | Our own minimal loop (Python, no framework) |
+| Discovery | `llm-map` (Rust) → `llm_map.json` |
+| Proxy | `proxy/` — **only** place future agent features land |
 | Guard | Deterministic Python layer that every tool call goes through (no LLM in the enforcement path) |
-| Shell | Runs in Docker, with only the project mounted |
+| Shell | **Roadmap:** Docker with project mount; today `shell` is a guarded stub |
 
-```
-[GLM 5.2 server]  <- proposes tool calls only
-       │
-[Agent loop] ──► [Guard] ──► files / Docker shell / network
-                    │
-               audit.jsonl
+
+### Tavily (bounty)
+
+```bash
+# optional for live calls
+cp .env.example .env   # set TAVILY_API_KEY
+
+python -m proxy
+# POST /v1/tavily/search   {"query":"..."}
+# POST /v1/tavily/verify   {"claim":"..."}   # stale-answer detector
+# or via tools: tavily_search / verify_claim on /v1/tools/execute
+
+python -m agent --scripted   # poisoned issue → verify_claim → blocked .env read
 ```
 
 ## How the guard works
@@ -45,17 +112,15 @@ Each tool call (`read_file`, `write_file`, `shell`, `http_request`, `read_github
 - `git push` and `pip install` are blocked once the session is tainted.
 - Handover after 3 denials; secrets are injected only for allowed hosts; the audit log is written.
 
-**Expected result:** `python3 -m pytest -q` → 7 passed. *(Current status: met.)*
+**Expected result:** `python -m pytest -q` green on Ubuntu CI. Guard core + proxy + Tavily unit tests. Symlink case skips on Windows without Developer Mode.
 
-### Step 2: Agent loop and tool executors
-**Build:**
-- `agent/llm.py`: OpenAI-compatible client (base URL and model name passed as config).
-- `agent/tools.py`: real executors for each tool, using `decision.args`. A local stub serves `attacks/poisoned_issue.md` as GitHub issue #42. Tool outputs are redacted before returning to the model.
-- `agent/run.py`: the loop (LLM → guard → execute or `BLOCKED` → back to LLM), with a `--no-guard` flag.
+### Step 2: Agent loop and tool executors ✅ stub via proxy
+**Build (current):**
+- `agent/run.py`: scripted trajectory that calls **only** the proxy (`/v1/tools/execute`). Includes Tavily `verify_claim` + `tavily_search`, then shows `.env` blocked.
+- Tool executors live in `proxy/tools.py` (not a parallel unprotected path). Issue #42 stub: `attacks/poisoned_issue.md`.
+- Live LLM loop (`/v1/chat/completions` through proxy) when `llm-map` has a backend — still to be hardened with redaction + `--no-guard` eval flag.
 
-**Tests:** a fake LLM replays a scripted hijacked trajectory through the real loop.
-
-**Expected result:** with the guard, the loop finishes with the bug fixed and no `.env` content sent out. With `--no-guard`, the fake attacker host receives the fake secret.
+**Expected result:** `python -m proxy` + `python -m agent --scripted` → poisoned issue read, stale exfil claim flagged, `.env` blocked.
 
 ### Step 3: First end-to-end run with GLM 5.2 (milestone: Sat 5 pm)
 **Build:** point the loop at the server and confirm that GLM 5.2 returns `tool_calls`.
@@ -95,8 +160,8 @@ Each tool call (`read_file`, `write_file`, `shell`, `http_request`, `read_github
 
 ```bash
 pip install -r requirements.txt
-python3 -m pytest -q
-python3 -m pytest tests/test_poisoned_issue.py::test_hijacked_agent_cannot_exfiltrate -q
+python -m pytest -q
+python -m pytest tests/test_poisoned_issue.py::test_hijacked_agent_cannot_exfiltrate -q
 ```
 
 ## Out of scope (future work)
