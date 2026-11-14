@@ -39,6 +39,9 @@ def tool(name: str, args: dict, *, no_guard: bool = False) -> dict:
 
 
 def run_scripted(task: str) -> None:
+    from varta.banner import print_banner
+
+    print_banner("agent", extra=f"task={task!r}  proxy={PROXY}  mode=scripted")
     print(f"[agent] task={task!r} mode=scripted via {PROXY}")
     steps = [
         ("read_github_issue", {"issue": "42"}),

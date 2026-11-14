@@ -185,16 +185,21 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    from varta.banner import print_banner
+
     STATE.refresh_map()
+    n_ep = len(STATE.llm_map.get("endpoints") or [])
+    print_banner(
+        "proxy",
+        extra=(
+            f"listen=http://{HOST}:{PORT}  "
+            f"map={ROOT / 'llm_map.json'}  "
+            f"endpoints={n_ep}  missing={STATE.llm_map.get('missing')}"
+        ),
+    )
+    print("  See proxy/AGENT_CONTRACT.md — all future features land in proxy/.")
+    print()
     httpd = ThreadingHTTPServer((HOST, PORT), Handler)
-    print("=" * 60)
-    print("THE PROXY — open-weight agent guard")
-    print("All future coding-agent features implement HERE (proxy/).")
-    print(f"Listening on http://{HOST}:{PORT}")
-    print("Agent contract: set base_url to this address; never call llm_map backends.")
-    print(f"Map: {ROOT / 'llm_map.json'} (missing={STATE.llm_map.get('missing')})")
-    print("See proxy/AGENT_CONTRACT.md")
-    print("=" * 60)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

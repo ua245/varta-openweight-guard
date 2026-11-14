@@ -1,6 +1,19 @@
-# Open-Weight Agent Guard
+# VARTA
 
-Open-weight coding agents get no safety layer by default. This guard gives a local coding agent the protections closed models ship with, so it can run autonomously without being hijacked by prompt injection.
+```
+╭╮╱╱╭╮╱╭━━━╮╱╭━━━╮╱╭━━━━╮╱╭━━━╮
+┃╰╮╭╯┃╱┃╭━╮┃╱┃╭━╮┃╱┃╭╮╭╮┃╱┃╭━╮┃
+╰╮┃┃╭╯╱┃┃╱┃┃╱┃╰━╯┃╱╰╯┃┃╰╯╱┃┃╱┃┃
+╱┃╰╯┃╱╱┃╰━╯┃╱┃╭╮╭╯╱╱╱┃┃╱╱╱┃╰━╯┃
+╱╰╮╭╯╱╱┃╭━╮┃╱┃┃┃╰╮╱╱╱┃┃╱╱╱┃╭━╮┃
+╱╱╰╯╱╱╱╰╯╱╰╯╱╰╯╰━╯╱╱╱╰╯╱╱╱╰╯╱╰╯
+```
+
+**5641525441 - Secure your Open-Weight Open-Source Coding Agents - BfUVXmtYsj**
+
+Open-weight coding agents get no safety layer by default. VARTA gives a local coding agent the protections closed models ship with, so it can run autonomously without being hijacked by prompt injection.
+
+Wordmark: [`assets/varta-logo.html`](assets/varta-logo.html). Terminal loader: `python -m varta [proxy|agent|install|llm-map|tavily|guard]` — each scenario prints what is **LOADED** so the coding LLM knows the active surface.
 
 
 ## Competition tracks (Imperial AI Hack)
@@ -21,7 +34,14 @@ Judging fit: works (guarded tool path + CI), technical depth (deterministic guar
 - Optional live LLM: any OpenAI-compatible local server (Ollama, vLLM, llama.cpp, …) before running `llm-map`
 - Optional Tavily: set `TAVILY_API_KEY` (see `.env.example`) for live search / verify; unit tests mock Tavily
 
-**Proxy-only demo (no LLM, no Rust):** `pip install -r requirements.txt` then `python -m proxy`. Tool gate works; `POST /v1/chat/completions` returns 503 until `llm_map.json` has a backend.
+### Custom install (VARTA)
+
+```bash
+python -m varta.install              # pip + .env + import check + ASCII install loader
+python -m varta.install --with-rust  # also cargo build llm-map
+```
+
+**Proxy-only demo (no LLM, no Rust):** `python -m varta.install` then `python -m proxy`. Tool gate works; `POST /v1/chat/completions` returns 503 until `llm_map.json` has a backend. Set `VARTA_QUIET=1` to hide the ASCII loader.
 
 ## Canonical boot: 2 steps
 

@@ -304,7 +304,29 @@ fn output_path() -> PathBuf {
     }
 }
 
+fn print_varta_llm_map_banner() {
+    // Mirrors assets/varta-logo.html / varta.banner scenario=llm-map
+    eprintln!(
+        r#"
+╭╮╱╱╭╮╱╭━━━╮╱╭━━━╮╱╭━━━━╮╱╭━━━╮
+┃╰╮╭╯┃╱┃╭━╮┃╱┃╭━╮┃╱┃╭╮╭╮┃╱┃╭━╮┃
+╰╮┃┃╭╯╱┃┃╱┃┃╱┃╰━╯┃╱╰╯┃┃╰╯╱┃┃╱┃┃
+╱┃╰╯┃╱╱┃╰━╯┃╱┃╭╮╭╯╱╱╱┃┃╱╱╱┃╰━╯┃
+╱╰╮╭╯╱╱┃╭━╮┃╱┃┃┃╰╮╱╱╱┃┃╱╱╱┃╭━╮┃
+╱╱╰╯╱╱╱╰╯╱╰╯╱╰╯╰━╯╱╱╱╰╯╱╱╱╰╯╱╰╯
+5641525441 - Secure your Open-Weight Open-Source Coding Agents - BfUVXmtYsj
+  VARTA · LLM-MAP  (Step 1 discovery)
+  LOADED:
+    • process scan  — local open-weight / OSS LLM processes
+    • OpenAI probe  — /v1/models on candidate ports
+    • output        — llm_map.json for the PROXY (Step 2)
+  → Inventory only. Enforcement lives in the proxy.
+"#
+    );
+}
+
 fn main() {
+    print_varta_llm_map_banner();
     let endpoints = discover();
     let map = LlmMap {
         generated_at_unix: now_unix(),

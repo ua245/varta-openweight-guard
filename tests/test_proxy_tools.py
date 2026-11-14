@@ -22,4 +22,4 @@ def test_proxy_allows_legit_read_inside_repo():
     guard = build_guard(ROOT, audit_path="audit_proxy_test.jsonl")
     r = execute_tool(guard, "read_file", {"path": "README.md"})
     assert r["ok"] and not r["blocked"]
-    assert "Open-Weight Agent Guard" in r["content"]
+    assert "VARTA" in r["content"] or "Open-Weight" in r["content"]
