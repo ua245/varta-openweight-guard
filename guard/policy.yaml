@@ -1,0 +1,12 @@
+# Default policy shipped with the guard.
+mode: autonomous            # autonomous: "ask" -> deny with reason. interactive: prompt the human.
+network:
+  allow: [pypi.org, github.com, api.github.com, api.mybank-internal.com]
+  unknown: ask              # becomes deny when the session is tainted
+files:
+  deny: [.env, ".env.*", "*.pem", "*.key", ~/.ssh, ~/.aws]
+  write_only_in: ./
+tainted_session:
+  deny: [git_push, network_unknown, install_package]
+untrusted_sources: [http_request, read_github_issue, read_external_file]
+handover_after_denials: 3
