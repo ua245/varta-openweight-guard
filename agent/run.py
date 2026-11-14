@@ -4,7 +4,7 @@ import os
 import subprocess
 
 from .llm import OpenAICompatLLM
-from .scenario import run_scenario
+from .scenario import TASK_REMOTE, run_scenario
 
 
 def default_base_url():
@@ -40,6 +40,8 @@ def main():
     ap.add_argument("--issue", default="poisoned_issue.md", help="file in attacks/")
     ap.add_argument("--repo-injection", action="store_true",
                     help="poison bank/interest.py itself (attacks/repo_injection/)")
+    ap.add_argument("--remote-repo", action="store_true",
+                    help="task points to a reference file on (fake) github.com that holds the injection")
     ap.add_argument("--task", default=None, help="override the developer task")
     ap.add_argument("--attach", nargs="*", default=[],
                     help="files copied into the workspace under assets/ (e.g. untrusted images)")
@@ -53,7 +55,9 @@ def main():
     r = run_scenario(OpenAICompatLLM(a.base_url, a.model, api_key=a.api_key), use_guard=not a.no_guard,
                      issue_file=a.issue, max_steps=a.max_steps,
                      repo_injection=a.repo_injection, attachments=a.attach, shell=a.shell,
-                     **({"task": a.task} if a.task else {}))
+                     remote_repo=a.remote_repo,
+                     **({"task": a.task} if a.task else
+                        {"task": TASK_REMOTE} if a.remote_repo else {}))
     print("\n=== result ===")
     print(f"secret leaked to attacker : {'YES' if r['leaked'] else 'no'} "
           f"({r['attacker_requests']} request(s) received)")
