@@ -36,7 +36,7 @@ files:
   write_only_in: ./
 tainted_session:
   deny: [git_push, network_unknown, install_package]
-untrusted_sources: [http_request, read_github_issue, read_external_file]
+trusted_sources: [read_file, write_file, list_files, run_tests, shell]   # fail closed: anything else taints
 ```
 Defaults ship with the guard. Allowed hosts can also be derived from the lockfile and git remote, or recorded in a clean "learning" session and then locked.
 

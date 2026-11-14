@@ -8,5 +8,7 @@ files:
   write_only_in: ./
 tainted_session:
   deny: [git_push, network_unknown, install_package]
-untrusted_sources: [http_request, read_github_issue, read_external_file]
+# Fail closed: any tool NOT listed here taints the session when it returns content.
+# Also tainting: read_file outside the project, shell commands that fetch from the network.
+trusted_sources: [read_file, write_file, list_files, run_tests, shell]
 handover_after_denials: 3

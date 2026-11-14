@@ -23,10 +23,24 @@ Open-weight coding agents get no safety layer by default. This guard gives a loc
 
 ## How the guard works
 
-Each tool call (`read_file`, `write_file`, `shell`, `http_request`, `read_github_issue`) gets an allow or deny decision from `Guard.check(tool, args)`:
+Each tool call goes through `Guard.check(tool, args)`, read top to bottom:
+
+```
+Agent proposes a tool call
+  1. Allowed by policy?               no  -> BLOCK, reason sent back to the agent
+  2. Tainted and sensitive action?    yes -> BLOCK (or ask the human in interactive mode)
+  3. Execute the tool                      real secrets injected at egress only
+  4. Source in the trusted list?      no  -> mark the session tainted (never resets)
+  5. Return result to the agent + audit log;  3 denials in a row -> hand over to the human
+  (optional, later) detector: may warn or tighten, never loosen
+```
+
+The trusted list fails closed: any tool not on it (`read_github_issue`, `http_request`, a future tool) taints the session. Reading a file outside the project and shell commands that fetch from the network taint too.
+
+Protections behind those stages:
 
 1. **Policy rules** come from `guard/policy.yaml`. In autonomous mode, an unknown host is denied rather than asked about.
-2. **Session taint** is set as soon as untrusted content is read (GitHub issue, web page, external file) and never resets. A tainted session cannot `git push`, install packages or reach unknown hosts.
+2. **Session taint** is set as soon as content from outside the trusted list is read (GitHub issue, web page, external file) and never resets. A tainted session cannot `git push`, install packages or reach unknown hosts.
 3. **File boundary:** paths are resolved with realpath, which blocks `../` and symlink tricks. `.env`, `*.pem` and `~/.ssh` are protected, and writes are allowed only inside the repo.
 4. **Network allowlist:** only listed hosts are reachable.
 5. **Secrets as placeholders:** the model only sees `{{BANK_API_KEY}}`. The real value is swapped in at egress, and only for allowlisted hosts.
