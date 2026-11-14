@@ -1,0 +1,21 @@
+[Unit]
+Description=Local GPT-OSS 20B GPU inference
+Wants=network-online.target
+After=network-online.target containerd.service
+Requires=containerd.service
+RequiresMountsFor=/models/gpt-oss-20b
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/local/bin/nerdctl rm -f gpt-oss-server
+ExecStart=/home/lima.guest/ai-dev/bin/gpt-oss-server
+ExecStop=/usr/local/bin/nerdctl stop --time 30 gpt-oss-server
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=180
+TimeoutStopSec=45
+
+[Install]
+WantedBy=multi-user.target

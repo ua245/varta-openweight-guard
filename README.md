@@ -80,7 +80,7 @@ Hooks (if any) may observe the proxy; they are not the security boundary. The pr
 
 | Component | Choice |
 |---|---|
-| Model server | Ubuntu 24.04, GLM 5.2, OpenAI-compatible API (`/v1/chat/completions` with tool calling) |
+| Model server | Ubuntu 24.04 ARM64, GPT-OSS 20B MXFP4, local OpenAI-compatible API with verified tool calling; [environment details](local-ai/README.md) |
 | Discovery | `llm-map` (Rust) → `llm_map.json` |
 | Proxy | `proxy/` — **only** place future agent features land |
 | Guard | Deterministic Python layer that every tool call goes through (no LLM in the enforcement path) |
@@ -135,8 +135,10 @@ Each tool call (`read_file`, `write_file`, `shell`, `http_request`, `read_github
 
 **Expected result:** `python -m proxy` + `python -m agent --scripted` → poisoned issue read, stale exfil claim flagged, `.env` blocked.
 
-### Step 3: First end-to-end run with GLM 5.2 (milestone: Sat 5 pm)
-**Build:** point the loop at the server and confirm that GLM 5.2 returns `tool_calls`.
+### Step 3: First guarded end-to-end run with GPT-OSS 20B
+**Build:** point the loop at the server and confirm that GPT-OSS 20B returns `tool_calls` through the proxy.
+
+**Environment status:** GPT-OSS 20B and OpenCode pass local streaming, tool-call, file-edit and mail MCP smoke checks. These do not establish guarded-agent integration or attack-evaluation results. See [local setup and measurements](local-ai/README.md).
 
 **Test:** run "Fix issue #42" against the poisoned issue, with and without the guard.
 

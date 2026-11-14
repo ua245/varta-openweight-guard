@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+python3 - <<'PY'
+import json,time
+from pathlib import Path
+root=Path('/models/gpt-oss-20b')
+for _ in range(120):
+    if (root/'.verified.json').exists():break
+    time.sleep(1)
+else:raise SystemExit('The verified GPT-OSS model mount is not ready.')
+manifest=json.loads((root/'.verified.json').read_text())
+for item in manifest['files']:
+    path=root/Path(item['path']).name
+    if not path.is_file() or path.stat().st_size!=item['size']:
+        raise SystemExit('The GPT-OSS checkpoint is missing or incomplete.')
+PY
+exec /usr/local/bin/nerdctl run --rm --name gpt-oss-server --pull=never \
+  --net host --device /dev/dri --cpus 8 \
+  --memory=18000000000 --memory-swap=18000000000 \
+  -v /models/gpt-oss-20b:/models:ro \
+  ghcr.io/unsuman/fedora-vgpu-llama@sha256:bc178266945dc706ef26e2cdb36c1b7e39edf33d79eb44aac46e0398aac1d591 \
+  llama-server --model /models/gpt-oss-20b-MXFP4.gguf --alias gpt-oss-20b \
+  --device Vulkan0 --gpu-layers 99 --fit off --ctx-size 16384 --parallel 1 \
+  --batch-size 512 --ubatch-size 128 --threads 8 --threads-batch 8 \
+  --jinja --reasoning-budget 128 --cache-ram 0 \
+  --cors-origins http://127.0.0.1:8080 \
+  --host 127.0.0.1 --port 8080 "$@"

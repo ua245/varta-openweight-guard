@@ -1,0 +1,81 @@
+{
+  "validated_at_utc": "2026-11-14T21:06:04Z",
+  "model": "gpt-oss-20b",
+  "quantization": "MXFP4",
+  "checkpoint_bytes": 12109566624,
+  "revision": "41e8a94d15d62070b36cf4553a0250717ecf46b8",
+  "sha256": "27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901",
+  "sha256_verified": true,
+  "health": "ok",
+  "api": "http://127.0.0.1:8080/v1",
+  "runtime": "Ubuntu ARM64 llama.cpp; Vulkan0 via Virtio-GPU Venus (Apple M5 Pro)",
+  "runtime_device_evidence": "Running llama-server explicitly selects Vulkan0 and has /dev/dri/renderD128 open.",
+  "context_tokens": 16384,
+  "reasoning_effort": "low",
+  "reasoning_budget_tokens": 128,
+  "vm": {
+    "os": "Ubuntu Server 24.04.5 ARM64 with XFCE",
+    "vcpus": 8,
+    "configured_ram_bytes": 23999807488,
+    "virtual_disk_bytes": 17179869184
+  },
+  "chat_smoke_test": {
+    "answer": "OK",
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 72,
+      "prompt_ms": 2854.61,
+      "prompt_per_token_ms": 39.64736111111111,
+      "prompt_per_second": 25.22235962180473,
+      "predicted_n": 29,
+      "predicted_ms": 612.082,
+      "predicted_per_token_ms": 21.106275862068966,
+      "predicted_per_second": 47.3792727118262
+    }
+  },
+  "api_checks": {
+    "streaming": {
+      "passed": true,
+      "answer": "OK",
+      "first_visible_content_seconds": 2.649185084,
+      "total_seconds": 2.664303542
+    },
+    "tool_roundtrip": {
+      "passed": true,
+      "arguments": {
+        "a": 19,
+        "b": 23
+      },
+      "answer": "42",
+      "total_seconds": 2.1124565410000002,
+      "generation_tokens_per_second": 72.96179277547964
+    }
+  },
+  "opencode": {
+    "version": "2.3.0",
+    "model": "local/gpt-oss-20b",
+    "coding_test": "Created arithmetic.py through the write tool and ran two Python assertions through the shell tool. Independently checked file and assertions. Initial test-before-write failed, then model corrected it.",
+    "mail_test": "Called ubuntu-mail.mail_list_folders through MCP; returned five INBOX messages, three unread, matching tool result.",
+    "coding_run_seconds": 6.789,
+    "coding_run_timing_scope": "From first step_start event to last step_finish; excludes earlier prompt ingestion.",
+    "generation_tokens_per_second_observed": [
+      47.38,
+      68.45,
+      69.13,
+      70.24,
+      73.15
+    ]
+  },
+  "resource_monitor": {
+    "url": "http://127.0.0.1:9109/api/resources",
+    "sample_seconds": 1,
+    "enabled_at_boot": true,
+    "advancing_samples_verified": true,
+    "dashboard_cors_verified": true,
+    "gpu_utilization_available": false
+  },
+  "glm_removed": true,
+  "streaming_client": "ai-vm ask returned READY",
+  "mail_mcp": "Eight read-only tools; prior IMAP, MIME attachment, image extraction and OCR integration tests passed.",
+  "limitations": "Functional smoke tests, not broad coding or quality benchmarks. GPU is experimental virtual Vulkan, not physical passthrough. Prompt ingestion adds latency; first OpenCode coding prompt took about 16 seconds to ingest. GPU allocations may not appear in guest RAM usage."
+}

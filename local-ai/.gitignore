@@ -1,0 +1,9 @@
+*.gguf
+.verified.json
+model-status.json
+validation.local.json
+*.key
+*.pem
+*.zip
+credentials*
+account.json
