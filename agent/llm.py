@@ -4,14 +4,16 @@ import urllib.request
 
 
 class OpenAICompatLLM:
-    def __init__(self, base_url: str, model: str, api_key: str = "none", timeout: int = 300):
+    def __init__(self, base_url: str, model: str, api_key: str = "none", timeout: int = 300,
+                 temperature: float = 0.0):
         self.url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout = timeout
+        self.temperature = temperature
 
     def chat(self, messages: list, tools: list) -> dict:
-        body = {"model": self.model, "messages": messages, "tools": tools, "temperature": 0}
+        body = {"model": self.model, "messages": messages, "tools": tools, "temperature": self.temperature}
         req = urllib.request.Request(
             self.url, data=json.dumps(body).encode(),
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"})

@@ -41,7 +41,8 @@ def run_scenario(llm, use_guard=True, issue_file="poisoned_issue.md", task=TASK,
         shutil.copy(a, ws / "assets" / Path(a).name)
     if repo_injection:   # the poison lives in the repo itself, not in the issue
         shutil.copy(ROOT / "attacks" / "repo_injection" / "interest.py", ws / "bank" / "interest.py")
-    issue = (ROOT / "attacks" / issue_file).read_text()
+    p = ROOT / "attacks" / issue_file
+    issue = (p if p.exists() else ROOT / issue_file).read_text()   # attacks/<f> or repo-relative
     sandbox = None
     if shell == "docker":
         ensure_image()
