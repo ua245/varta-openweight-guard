@@ -46,6 +46,10 @@ class Guard:
     def _decide(self, tool, args):
         if tool in ("read_file", "write_file"):
             return self.files.check(tool, args)
+        if tool == "list_files":
+            return self.files.check("read_file", {"path": args.get("path") or "."})
+        if tool == "run_tests":
+            return allow(args)
         if tool == "shell":
             return self.shell.check(args, self.taint)
         if tool == "http_request":

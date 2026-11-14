@@ -1,0 +1,93 @@
+"""Tool executors. They only run AFTER the guard allowed the call (unless --no-guard)."""
+import os
+import subprocess
+import urllib.error
+import urllib.request
+from pathlib import Path
+from urllib.parse import urlparse, urlunparse
+
+MAX_OUT = 6000
+
+
+def _fn(name, desc, props, required=()):
+    return {"type": "function", "function": {
+        "name": name, "description": desc,
+        "parameters": {"type": "object", "properties": props, "required": list(required)}}}
+
+
+S = {"type": "string"}
+TOOL_SPECS = [
+    _fn("list_files", "List files in the project (recursive).", {"path": S}),
+    _fn("read_file", "Read a text file.", {"path": S}, ["path"]),
+    _fn("write_file", "Overwrite a file with new content.", {"path": S, "content": S}, ["path", "content"]),
+    _fn("shell", "Run a shell command in the project directory.", {"cmd": S}, ["cmd"]),
+    _fn("http_request", "Make an HTTP request.",
+        {"method": S, "url": S, "headers": {"type": "object"}, "body": S}, ["method", "url"]),
+    _fn("read_github_issue", "Read a GitHub issue of the project.",
+        {"number": {"type": "integer"}}, ["number"]),
+    _fn("run_tests", "Run the project's test suite (pytest).", {}),
+]
+
+
+class Tools:
+    def __init__(self, workspace, issues: dict, host_map: dict | None = None):
+        self.ws = Path(workspace)
+        self.issues = issues            # {number: text}, stub for the GitHub API
+        self.host_map = host_map or {}  # demo DNS: hostname -> "127.0.0.1:port"
+
+    def execute(self, name: str, args: dict) -> str:
+        fn = getattr(self, "_" + name, None)
+        if fn is None:
+            return f"ERROR: unknown tool {name}"
+        try:
+            return fn(**args)[:MAX_OUT]
+        except TypeError as e:
+            return f"ERROR: bad arguments for {name}: {e}"
+        except Exception as e:  # tool errors are returned to the agent, not raised
+            return f"ERROR: {type(e).__name__}: {e}"
+
+    def _path(self, p):
+        p = Path(os.path.expanduser(p or "."))
+        return p if p.is_absolute() else self.ws / p
+
+    def _list_files(self, path="."):
+        root = self._path(path)
+        out = []
+        for d, dirs, files in os.walk(root):
+            dirs[:] = [x for x in dirs if x not in (".git", "__pycache__", ".pytest_cache")]
+            out += [os.path.relpath(os.path.join(d, f), self.ws) for f in files]
+        return "\n".join(sorted(out))
+
+    def _read_file(self, path):
+        return self._path(path).read_text()
+
+    def _write_file(self, path, content):
+        p = self._path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content)
+        return f"wrote {len(content)} bytes to {path}"
+
+    def _shell(self, cmd):
+        r = subprocess.run(["bash", "-c", cmd], cwd=self.ws, capture_output=True, text=True, timeout=60)
+        return f"exit={r.returncode}\n{r.stdout}{r.stderr}"
+
+    def _run_tests(self):
+        r = subprocess.run(["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"],
+                           cwd=self.ws, capture_output=True, text=True, timeout=120)
+        return f"exit={r.returncode}\n{r.stdout[-3000:]}{r.stderr[-1000:]}"
+
+    def _read_github_issue(self, number, repo=None):
+        return self.issues.get(int(number), f"issue #{number} not found")
+
+    def _http_request(self, method, url, headers=None, body=None):
+        u = urlparse(url)
+        if u.hostname in self.host_map:   # route demo hosts to local fake servers
+            u = u._replace(scheme="http", netloc=self.host_map[u.hostname])
+        data = body.encode() if isinstance(body, str) else None
+        req = urllib.request.Request(urlunparse(u), data=data, method=method.upper(),
+                                     headers=headers or {})
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                return f"status={r.status}\n{r.read(2000).decode(errors='replace')}"
+        except urllib.error.HTTPError as e:
+            return f"status={e.code}"
