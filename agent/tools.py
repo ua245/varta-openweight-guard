@@ -1,4 +1,6 @@
 """Tool executors. They only run AFTER the guard allowed the call (unless --no-guard)."""
+import base64
+import mimetypes
 import os
 import subprocess
 import urllib.error
@@ -26,7 +28,11 @@ TOOL_SPECS = [
     _fn("read_github_issue", "Read a GitHub issue of the project.",
         {"number": {"type": "integer"}}, ["number"]),
     _fn("run_tests", "Run the project's test suite (pytest).", {}),
+    _fn("view_image", "Look at an image file (png, jpg). The image is shown to you.", {"path": S}, ["path"]),
 ]
+
+# The agent's shell never sees the developer's real environment variables.
+SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8"}
 
 
 class Tools:
@@ -34,6 +40,7 @@ class Tools:
         self.ws = Path(workspace)
         self.issues = issues            # {number: text}, stub for the GitHub API
         self.host_map = host_map or {}  # demo DNS: hostname -> "127.0.0.1:port"
+        self.pending_images: list[str] = []   # data URLs to show the model after this step
 
     def execute(self, name: str, args: dict) -> str:
         fn = getattr(self, "_" + name, None)
@@ -68,8 +75,15 @@ class Tools:
         return f"wrote {len(content)} bytes to {path}"
 
     def _shell(self, cmd):
-        r = subprocess.run(["bash", "-c", cmd], cwd=self.ws, capture_output=True, text=True, timeout=60)
+        r = subprocess.run(["bash", "-c", cmd], cwd=self.ws, capture_output=True, text=True, timeout=60,
+                           env={**SAFE_ENV, "HOME": str(self.ws)})
         return f"exit={r.returncode}\n{r.stdout}{r.stderr}"
+
+    def _view_image(self, path):
+        p = self._path(path)
+        mime = mimetypes.guess_type(p.name)[0] or "image/png"
+        self.pending_images.append(f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode())
+        return f"image {path} loaded; it is shown in the next message"
 
     def _run_tests(self):
         r = subprocess.run(["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"],

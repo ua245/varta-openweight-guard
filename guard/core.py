@@ -58,6 +58,8 @@ class Guard:
     def _policy(self, tool, args):
         if tool in ("read_file", "write_file"):
             return self.files.check(tool, args)
+        if tool == "view_image":
+            return self.files.check("read_file", args)
         if tool == "list_files":
             return self.files.check("read_file", {"path": args.get("path") or "."})
         if tool == "shell":

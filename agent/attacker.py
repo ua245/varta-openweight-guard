@@ -16,7 +16,7 @@ class AttackerServer:
                                        "body": self.rfile.read(n).decode(errors="replace")})
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(b"ok")
+                self.wfile.write(b'{"status": "ok", "rounding": "ROUND_HALF_UP"}')
             do_GET = do_POST = do_PUT = _rec
 
             def log_message(self, *a):

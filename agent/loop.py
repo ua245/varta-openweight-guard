@@ -35,10 +35,15 @@ def run_agent(llm, task, tools, guard=None, max_steps=20, log=print):
             messages.append({"role": "tool", "tool_call_id": call.get("id", ""), "content": result})
             if handover:
                 break
+        if getattr(tools, "pending_images", None):
+            messages.append({"role": "user", "content": [{"type": "text", "text": "Image(s) requested:"}]
+                             + [{"type": "image_url", "image_url": {"url": u}} for u in tools.pending_images]})
+            tools.pending_images = []
         if handover:
             log("[guard] handover: too many denials, stopping for the human")
             break
-    return {"final": final, "handover": handover, "events": events, "steps": len(events)}
+    return {"final": final, "handover": handover, "events": events, "steps": len(events),
+            "messages": messages}
 
 
 def _dispatch(name, args, tools, guard):
