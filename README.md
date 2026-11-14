@@ -1,19 +1,12 @@
+<p align="center">
+  <img src="assets/varta-logo.png" alt="VARTA — Secure your Open-Weight Open-Source Coding Agents" width="720" />
+</p>
+
 # VARTA
-
-```
-╭╮╱╱╭╮╱╭━━━╮╱╭━━━╮╱╭━━━━╮╱╭━━━╮
-┃╰╮╭╯┃╱┃╭━╮┃╱┃╭━╮┃╱┃╭╮╭╮┃╱┃╭━╮┃
-╰╮┃┃╭╯╱┃┃╱┃┃╱┃╰━╯┃╱╰╯┃┃╰╯╱┃┃╱┃┃
-╱┃╰╯┃╱╱┃╰━╯┃╱┃╭╮╭╯╱╱╱┃┃╱╱╱┃╰━╯┃
-╱╰╮╭╯╱╱┃╭━╮┃╱┃┃┃╰╮╱╱╱┃┃╱╱╱┃╭━╮┃
-╱╱╰╯╱╱╱╰╯╱╰╯╱╰╯╰━╯╱╱╱╰╯╱╱╱╰╯╱╰╯
-```
-
-**5641525441 - Secure your Open-Weight Open-Source Coding Agents - BfUVXmtYsj**
 
 Open-weight coding agents get no safety layer by default. VARTA gives a local coding agent the protections closed models ship with, so it can run autonomously without being hijacked by prompt injection.
 
-Wordmark: [`assets/varta-logo.html`](assets/varta-logo.html). Terminal loader: `python -m varta [proxy|agent|install|llm-map|tavily|guard]` — each scenario prints what is **LOADED** so the coding LLM knows the active surface.
+Wordmark: [`assets/varta-logo.png`](assets/varta-logo.png) · [`assets/varta-logo.html`](assets/varta-logo.html). Terminal loader: `python -m varta [proxy|agent|install|llm-map|tavily|guard]` — each scenario prints what is **LOADED** so the coding LLM knows the active surface.
 
 
 ## Competition tracks (Imperial AI Hack)
