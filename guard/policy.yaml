@@ -12,3 +12,12 @@ tainted_session:
 # Also tainting: read_file outside the project, shell commands that fetch from the network.
 trusted_sources: [read_file, write_file, list_files, run_tests, shell]
 handover_after_denials: 3
+
+# Optional layer 2 (see guard/detector.py). Can only tighten: taint + warn, never allow.
+# "auto" = on when ADAPTION_API_KEY is set. Content is sent to an external API, secrets redacted.
+detector:
+  enabled: auto
+  provider: adaption
+  model: "stack:uvx"
+  timeout: 60
+  scan_tools: [read_file, read_github_issue, http_request, shell]

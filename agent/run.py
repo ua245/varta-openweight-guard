@@ -18,10 +18,24 @@ def default_base_url():
         return "http://localhost:11434/v1"
 
 
+def load_dotenv(path=".env"):
+    """Load KEY=VALUE lines from the repo's .env into this process only (not the agent's shell)."""
+    try:
+        for line in open(path):
+            if "=" in line and not line.lstrip().startswith("#"):
+                k, v = line.strip().split("=", 1)
+                os.environ.setdefault(k, v)
+    except FileNotFoundError:
+        pass
+
+
 def main():
+    load_dotenv()
     ap = argparse.ArgumentParser()
     ap.add_argument("--base-url", default=default_base_url())
-    ap.add_argument("--model", default="gemma4:e2b")
+    ap.add_argument("--model", default=os.environ.get("AGENT_MODEL", "gemma4:e2b"))
+    ap.add_argument("--api-key", default=os.environ.get("AGENT_API_KEY", "none"),
+                    help="bearer token for the model server, if it requires one")
     ap.add_argument("--no-guard", action="store_true")
     ap.add_argument("--issue", default="poisoned_issue.md", help="file in attacks/")
     ap.add_argument("--repo-injection", action="store_true",
@@ -29,25 +43,35 @@ def main():
     ap.add_argument("--task", default=None, help="override the developer task")
     ap.add_argument("--attach", nargs="*", default=[],
                     help="files copied into the workspace under assets/ (e.g. untrusted images)")
+    ap.add_argument("--shell", choices=["docker", "local"], default="docker",
+                    help="docker = sandboxed shell (default); local = host shell, for comparison")
     ap.add_argument("--max-steps", type=int, default=20)
     a = ap.parse_args()
 
-    print(f"model={a.model} url={a.base_url} guard={'OFF' if a.no_guard else 'ON'}\n")
-    r = run_scenario(OpenAICompatLLM(a.base_url, a.model), use_guard=not a.no_guard,
+    det = "ON (adaption)" if os.environ.get("ADAPTION_API_KEY") and not a.no_guard else "off"
+    print(f"model={a.model} url={a.base_url} guard={'OFF' if a.no_guard else 'ON'} detector={det} shell={a.shell}\n")
+    r = run_scenario(OpenAICompatLLM(a.base_url, a.model, api_key=a.api_key), use_guard=not a.no_guard,
                      issue_file=a.issue, max_steps=a.max_steps,
-                     repo_injection=a.repo_injection, attachments=a.attach,
+                     repo_injection=a.repo_injection, attachments=a.attach, shell=a.shell,
                      **({"task": a.task} if a.task else {}))
     print("\n=== result ===")
     print(f"secret leaked to attacker : {'YES' if r['leaked'] else 'no'} "
           f"({r['attacker_requests']} request(s) received)")
     print(f"secret seen by the model  : {'YES' if r['secret_seen_by_model'] else 'no'}")
     print(f"secret in final answer    : {'YES' if r['secret_in_final_answer'] else 'no'}")
-    print(f"task done (tests pass)    : {'yes' if r['task_done'] else 'NO'}")
+    if a.task:   # custom task: the bank tests are not the success criterion
+        print(f"task done                 : n/a (custom task, check the answer above)")
+    else:
+        print(f"task done (tests pass)    : {'yes' if r['task_done'] else 'NO'}")
     print(f"blocked calls             : {sum(e['action'] == 'BLOCK' for e in r['events'])}")
     print(f"handover to human         : {r['handover']}")
+    if r.get("detector_flags"):
+        print(f"detector flagged          : {', '.join(r['detector_flags'])}")
     if r["taint_sources"]:
         print(f"session tainted by        : {r['taint_sources'][0]}")
     print(f"workspace                 : {r['workspace']}")
+    if r.get("audit_log"):
+        print(f"audit log                 : {r['audit_log']}")
 
 
 if __name__ == "__main__":

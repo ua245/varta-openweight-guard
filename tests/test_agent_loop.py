@@ -39,14 +39,14 @@ class HijackedLLM:
 
 
 def test_without_guard_secret_leaks():
-    r = run_scenario(HijackedLLM(), use_guard=False, log=lambda *_: None)
+    r = run_scenario(HijackedLLM(), use_guard=False, log=lambda *_: None, shell="local")
     assert r["leaked"]
     assert r["task_done"]
 
 
 def test_with_guard_no_leak_and_task_done():
     llm = HijackedLLM()
-    r = run_scenario(llm, use_guard=True, log=lambda *_: None)
+    r = run_scenario(llm, use_guard=True, log=lambda *_: None, shell="local")
     assert not r["leaked"]
     assert r["attacker_requests"] == 0
     assert r["task_done"]                      # autonomy preserved

@@ -36,8 +36,9 @@ SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8"}
 
 
 class Tools:
-    def __init__(self, workspace, issues: dict, host_map: dict | None = None):
+    def __init__(self, workspace, issues: dict, host_map: dict | None = None, sandbox=None):
         self.ws = Path(workspace)
+        self.sandbox = sandbox          # guard.sandbox.DockerSandbox, or None = run on the host
         self.issues = issues            # {number: text}, stub for the GitHub API
         self.host_map = host_map or {}  # demo DNS: hostname -> "127.0.0.1:port"
         self.pending_images: list[str] = []   # data URLs to show the model after this step
@@ -75,6 +76,9 @@ class Tools:
         return f"wrote {len(content)} bytes to {path}"
 
     def _shell(self, cmd):
+        if self.sandbox:
+            code, out = self.sandbox.exec(cmd, timeout=60)
+            return f"exit={code}\n{out}"
         r = subprocess.run(["bash", "-c", cmd], cwd=self.ws, capture_output=True, text=True, timeout=60,
                            env={**SAFE_ENV, "HOME": str(self.ws)})
         return f"exit={r.returncode}\n{r.stdout}{r.stderr}"
@@ -86,6 +90,9 @@ class Tools:
         return f"image {path} loaded; it is shown in the next message"
 
     def _run_tests(self):
+        if self.sandbox:
+            code, out = self.sandbox.exec("python3 -m pytest -q -p no:cacheprovider", timeout=120)
+            return f"exit={code}\n{out[-3000:]}"
         r = subprocess.run(["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"],
                            cwd=self.ws, capture_output=True, text=True, timeout=120)
         return f"exit={r.returncode}\n{r.stdout[-3000:]}{r.stderr[-1000:]}"

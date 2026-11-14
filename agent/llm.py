@@ -17,5 +17,8 @@ class OpenAICompatLLM:
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"})
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             msg = json.load(resp)["choices"][0]["message"]
-        return {"role": "assistant", "content": msg.get("content") or "",
-                "tool_calls": msg.get("tool_calls") or []}
+        out = {"role": "assistant", "content": msg.get("content") or "",
+               "tool_calls": msg.get("tool_calls") or []}
+        if msg.get("reasoning"):
+            out["reasoning"] = msg["reasoning"]   # kept for the log, not sent back
+        return out

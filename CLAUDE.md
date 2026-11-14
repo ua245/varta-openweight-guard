@@ -78,6 +78,8 @@ Protecting Claude Code or closed models (they already have hooks, sandbox, class
 - Install: `pip install -r requirements.txt`
 - All tests: `python3 -m pytest -q`
 - One test: `python3 -m pytest tests/test_poisoned_issue.py::test_hijacked_agent_cannot_exfiltrate -q`
+- Sandbox tests need Docker (skipped otherwise); the image `agent-guard-sandbox:1` is built on first use from `sandbox/Dockerfile`.
+- Run the agent: `python3 -m agent.run --model gemma4:e2b [--no-guard] [--shell local] --issue poisoned_issue_v3.md`
 
 ## Guard code map
 `guard/core.py` `Guard.check(tool, args) -> Decision` is the single enforcement point; it dispatches to one module per protection (`files.py`, `network.py`, `shell.py`, `secrets.py`), updates `taint.py` after a call is allowed, counts consecutive denials (handover + pause after 3, `Guard.resume()` to continue), and writes `audit.jsonl`. `Decision.args` may hold rewritten args (secrets injected) — executors must use those, not the originals. Default policy: `guard/policy.yaml` (`mode: autonomous` turns `ask` into `deny`).

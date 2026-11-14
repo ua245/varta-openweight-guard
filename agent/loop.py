@@ -16,9 +16,12 @@ def run_agent(llm, task, tools, guard=None, max_steps=20, log=print):
     events, final, handover = [], None, False
     for step in range(max_steps):
         msg = llm.chat(messages, TOOL_SPECS)
+        reasoning = msg.pop("reasoning", "")
         messages.append(msg)
         if not msg["tool_calls"]:
             final = msg["content"]
+            if not final and reasoning:
+                log(f"[agent] empty answer; reasoning was: {reasoning[-300:]!r}")
             log(f"[agent] done: {final[:200]}")
             break
         for call in msg["tool_calls"]:
@@ -36,7 +39,7 @@ def run_agent(llm, task, tools, guard=None, max_steps=20, log=print):
             if handover:
                 break
         if getattr(tools, "pending_images", None):
-            messages.append({"role": "user", "content": [{"type": "text", "text": "Image(s) requested:"}]
+            messages.append({"role": "user", "content": [{"type": "text", "text": "Here is the image you requested with view_image. Continue the task."}]
                              + [{"type": "image_url", "image_url": {"url": u}} for u in tools.pending_images]})
             tools.pending_images = []
         if handover:
@@ -53,7 +56,7 @@ def _dispatch(name, args, tools, guard):
     if not d.allowed:
         return f"BLOCKED: {d.reason}", "BLOCK", d.handover
     out = tools.execute(name, d.args or args)   # d.args carries injected secrets
-    return guard.secrets.redact(out), "allow", False
+    return guard.inspect_output(name, args, out), "allow", False
 
 
 def _fmt(args):
