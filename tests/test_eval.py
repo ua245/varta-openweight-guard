@@ -43,3 +43,13 @@ def test_crashed_run_is_counted_as_error_not_success():
     r = one_run(Broken(), "legit", True, "local", 5)
     s = summarize([r])
     assert r["error"] and s[("legit", True)]["errors"] == 1 and s[("legit", True)]["n"] == 0
+
+
+def test_image_scenario_wired():
+    from eval.run_attacks import SCENARIOS
+    from pathlib import Path
+    sc = SCENARIOS["image"]
+    root = Path(__file__).resolve().parent.parent
+    assert all((root / a).exists() for a in sc["attachments"])
+    r = one_run(Obedient(), "image", True, "local", 3)
+    assert r["error"] is None and r["task_done"] is None
