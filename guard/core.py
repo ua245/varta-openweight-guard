@@ -1,18 +1,25 @@
-"""Single enforcement point. Every tool call goes through Guard.check(). Deterministic, no LLM."""
+"""Single enforcement point. Every tool call goes through Guard.check().
+
+The policy stage is deterministic. Only calls it leaves open (ambiguous, or tainted and
+sensitive) reach the researcher agent, and only when one is attached; see updated-guard-flow.png.
+"""
 from .audit import AuditLog
 from .decision import Decision, allow, deny
 from .files import FileBoundary
 from .network import NetworkBoundary
+from .researcher import ProposedCall, SessionView
 from .secrets import SecretStore
 from .shell import ShellFilter
 from .taint import Taint
 
 
 class Guard:
-    def __init__(self, policy, project_root=".", audit_path="audit.jsonl", ask_human=None):
+    def __init__(self, policy, project_root=".", audit_path="audit.jsonl", ask_human=None,
+                 researcher=None):
         self.policy = policy
         self.mode = policy.get("mode", "autonomous")
         self.ask_human = ask_human            # callable(reason) -> bool, used in interactive mode
+        self.researcher = researcher          # guard.researcher.Researcher, or None for policy-only
         self.taint = Taint(policy["untrusted_sources"])
         self.files = FileBoundary(policy, project_root)
         self.network = NetworkBoundary(policy)
@@ -29,6 +36,8 @@ class Guard:
             d.handover = True
         else:
             d = self._decide(tool, args)
+            if self.researcher is not None and (d.action == "ask" or d.sensitive):
+                d = self._research(d, tool, args)
             d = self._resolve_ask(d)
             self._count(d)
         if d.action == "allow":
@@ -63,6 +72,19 @@ class Guard:
         if tool in self.taint.untrusted:
             return allow(args)                         # e.g. read_github_issue: allowed, taints
         return deny(f"unknown tool '{tool}'")
+
+    def _research(self, d, tool, args):
+        call = ProposedCall(tool, args, d.reason)
+        session = SessionView(self.policy, list(self.taint.sources), self.audit.path,
+                              self.secrets.redact)
+        verdict = self.researcher.review(call, session)
+        if verdict.approved:
+            decision = allow(args)
+            decision.reason = verdict.agent_reason()
+        else:
+            decision = deny(f"{d.reason}; {verdict.agent_reason()}")
+        decision.research = verdict.to_audit()
+        return decision
 
     def _resolve_ask(self, d):
         if d.action != "ask":

@@ -2,17 +2,43 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from guard import Guard, load_policy
+from guard.researcher import ChatModel, Researcher
+from proxy.map_loader import load_llm_map, pick_backend
+from proxy.tavily_client import _load_dotenv
 
 
 def build_guard(project_root: str | Path | None = None, audit_path: str = "audit.jsonl") -> Guard:
     root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent
     policy = load_policy(root / "guard" / "policy.yaml")
-    return Guard(policy, project_root=str(root), audit_path=str(root / audit_path))
+    researcher = build_researcher(root)
+    return Guard(policy, project_root=str(root), audit_path=str(root / audit_path),
+                 researcher=researcher)
+
+
+def build_researcher(root: Path) -> Researcher | None:
+    """Researcher brain: RESEARCHER_* env, else the first backend in llm_map.json. None = policy-only."""
+    _load_dotenv()
+    base_url = os.environ.get("RESEARCHER_BASE_URL")
+    model = os.environ.get("RESEARCHER_MODEL") or os.environ.get("FINE_TUNED_MODEL")
+    if base_url is None:
+        backend = pick_backend(load_llm_map(root / "llm_map.json"), model)
+        if backend is None:
+            return None
+        base_url = backend["base_url"].rstrip("/") + "/v1"
+        models = backend.get("models") or []
+        if model is None and models:
+            model = models[0]
+    if model is None:
+        return None
+    chat_model = ChatModel(base_url, model, os.environ.get("RESEARCHER_API_KEY"))
+    researcher = Researcher(chat_model.complete)
+    return researcher
 
 
 def _normalize_args(tool: str, args: dict) -> dict:

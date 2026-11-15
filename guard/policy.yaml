@@ -2,11 +2,12 @@
 mode: autonomous            # autonomous: "ask" -> deny with reason. interactive: prompt the human.
 network:
   allow: [pypi.org, github.com, api.github.com, api.mybank-internal.com, api.tavily.com]
-  unknown: ask              # becomes deny when the session is tainted
+  unknown: ask              # ambiguous: goes to the researcher agent when one is attached
 files:
   deny: [.env, ".env.*", "*.pem", "*.key", ~/.ssh, ~/.aws]
   write_only_in: ./
 tainted_session:
+  # Sensitive once tainted: reviewed by the researcher agent, denied outright without one.
   deny: [git_push, network_unknown, install_package]
 untrusted_sources: [http_request, read_github_issue, read_external_file, tavily_search, verify_claim]
 handover_after_denials: 3

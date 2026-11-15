@@ -1,5 +1,5 @@
 from urllib.parse import urlparse
-from .decision import Decision, allow, deny
+from .decision import Decision, allow, deny, deny_sensitive
 
 
 class NetworkBoundary:
@@ -16,8 +16,8 @@ class NetworkBoundary:
         if self.host_allowed(host):
             return allow(args)
         if taint.tainted and "network_unknown" in self.tainted_deny:
-            return deny(f"host '{host}' is not on the allowlist and the session is tainted by "
-                        f"{taint.sources[0]}")
+            return deny_sensitive(f"host '{host}' is not on the allowlist and the session is "
+                                  f"tainted by {taint.sources[0]}")
         if self.unknown == "allow":
             return allow(args)
         if self.unknown == "ask":
