@@ -7,6 +7,10 @@ from .llm import OpenAICompatLLM
 from .scenario import TASK_REMOTE, run_scenario
 
 
+def _short_args(args):
+    return ", ".join(f"{k}={str(v)[:40]}" for k, v in args.items() if k in ("cmd", "url", "path"))
+
+
 def default_base_url():
     if url := os.environ.get("AGENT_BASE_URL"):
         return url
@@ -43,6 +47,9 @@ def main():
     ap.add_argument("--vision-model", default=None,
                     help="separate vision model used by view_image (e.g. qwen2.5vl:7b); "
                          "the agent model then receives a text description")
+    ap.add_argument("--researcher-model", default=None,
+                    help="model for the autonomous reviewer that adjudicates gray-zone calls "
+                         "(e.g. the fine-tuned model); replaces the human handover")
     ap.add_argument("--remote-repo", nargs="?", const=True, default=False,
                     choices=[True, "weak", "strong"],
                     help="task points to a reference file on (fake) github.com that holds the "
@@ -64,6 +71,8 @@ def main():
                      remote_repo=("strong" if a.remote_repo == "strong" else bool(a.remote_repo)),
                      vision=OpenAICompatLLM(a.base_url, a.vision_model, api_key=a.api_key)
                      if a.vision_model else None,
+                     researcher_llm=OpenAICompatLLM(a.base_url, a.researcher_model, api_key=a.api_key)
+                     if a.researcher_model else None,
                      **({"task": a.task} if a.task else
                         {"task": TASK_REMOTE} if a.remote_repo else {}))
     print("\n=== result ===")
@@ -77,6 +86,9 @@ def main():
         print(f"task done (tests pass)    : {'yes' if r['task_done'] else 'NO'}")
     print(f"blocked calls             : {sum(e['action'] == 'BLOCK' for e in r['events'])}")
     print(f"handover to human         : {r['handover']}")
+    for rev in r.get("reviews", []):
+        print(f"researcher {'APPROVED' if rev['approve'] else 'DENIED  '}: "
+              f"{rev['tool']}({_short_args(rev['args'])}) — {rev['rationale'][:90]}")
     if r.get("detector_flags"):
         print(f"detector flagged          : {', '.join(r['detector_flags'])}")
     if r["taint_sources"]:

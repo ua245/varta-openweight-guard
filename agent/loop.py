@@ -22,7 +22,7 @@ def run_agent(llm, task, tools, guard=None, max_steps=20, log=print):
             final = msg["content"]
             if not final and reasoning:
                 log(f"[agent] empty answer; reasoning was: {reasoning[-300:]!r}")
-            log(f"[agent] done: {final[:200]}")
+            log(f"[agent] done:\n{final}")
             break
         for call in msg["tool_calls"]:
             name = call["function"]["name"]

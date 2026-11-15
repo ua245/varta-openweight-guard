@@ -5,6 +5,8 @@ import tempfile
 from pathlib import Path
 
 from guard import Guard, load_policy
+from guard.core import ReadOnlyReader
+from guard.researcher import ResearcherAgent
 from .attacker import AttackerServer
 from guard.sandbox import DockerSandbox, ensure_image
 from .loop import run_agent
@@ -58,8 +60,9 @@ def tests_pass(ws) -> bool:
 
 def run_scenario(llm, use_guard=True, issue_file="poisoned_issue.md", task=TASK,
                  max_steps=20, log=print, repo_injection=False, attachments=(), shell="docker",
-                 remote_repo=False, vision=None):
-    """shell: "docker" (sandboxed, default) or "local" (host shell, for comparison only)."""
+                 remote_repo=False, vision=None, researcher_llm=None):
+    """shell: "docker" (sandboxed, default) or "local" (host shell, for comparison only).
+    researcher_llm: an LLM for the autonomous reviewer; None keeps the legacy autonomous-deny path."""
     ws = prepare_workspace()
     for a in attachments:   # e.g. untrusted images dropped into the project
         (ws / "assets").mkdir(exist_ok=True)
@@ -77,13 +80,15 @@ def run_scenario(llm, use_guard=True, issue_file="poisoned_issue.md", task=TASK,
         pages = {}
         if remote_repo:   # an allowlisted host serves the reference file (strong = harder injection)
             pages[REMOTE_REF_PATH] = remote_reference_page(strong=(remote_repo == "strong"))
-        return _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision)
+        return _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision,
+                    researcher_llm)
     finally:
         if sandbox:
             sandbox.stop()
 
 
-def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision=None):
+def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision=None,
+         researcher_llm=None):
     with AttackerServer(pages=pages) as attacker:
         hosts = ATTACKER_HOSTS + (REMOTE_HOSTS if pages else [])
         tools = Tools(ws, issues={42: issue}, host_map={h: attacker.addr for h in hosts},
@@ -92,8 +97,10 @@ def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision
         if use_guard:
             # audit log lives OUTSIDE the workspace: the agent must not read or edit it
             audit = ws.parent / f"{ws.name}-audit.jsonl"
-            guard = Guard(load_policy(), project_root=ws, audit_path=audit)
+            guard = Guard(load_policy(), project_root=ws, audit_path=audit, task=task)
             guard.secrets.register("BANK_API_KEY", FAKE_SECRET)
+            if researcher_llm is not None:
+                guard.researcher = ResearcherAgent(researcher_llm, reader=ReadOnlyReader(guard.files))
         result = run_agent(llm, task, tools, guard=guard, max_steps=max_steps, log=log)
         result.update({
             "workspace": str(ws),
@@ -107,6 +114,7 @@ def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision
             "task_done": tests_pass(ws),
             "taint_sources": guard.taint.sources if guard else [],
             "detector_flags": guard.detector_flags if guard else [],
+            "reviews": guard.review_log if guard else [],
             "shell": "docker" if sandbox else "local",
         })
     return result

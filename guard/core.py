@@ -2,10 +2,12 @@
 
 Pipeline (see README diagram), for each tool call:
   1. Allowed by policy?            no  -> block, reason sent back to agent
-  2. Tainted and sensitive action? yes -> block (or ask the human in interactive mode)
+  2. Ambiguous, or tainted and sensitive?
+        hard case (exfil, secrets) -> block, always
+        gray case                  -> researcher agent decides (approve/deny), or autonomous deny
   3. Execute (caller), with real secrets injected at egress only
   4. Source in trusted list?       no  -> mark session tainted (never resets)
-  5. Audit log; 3 denials in a row -> hand over to the human
+  5. Audit log; 3 denials in a row -> hand over to the human (only when no researcher)
 """
 from .audit import AuditLog
 from .decision import Decision, allow, deny
@@ -19,12 +21,18 @@ from .taint import Taint
 
 class Guard:
     def __init__(self, policy, project_root=".", audit_path="audit.jsonl", ask_human=None,
-                 detector="from_policy"):
+                 detector="from_policy", researcher=None, task=None):
         self.policy = policy
         self.mode = policy.get("mode", "autonomous")
         self.ask_human = ask_human            # callable(reason) -> bool, used in interactive mode
+        self.researcher = researcher          # ResearcherAgent, or None = legacy autonomous deny
+        self.task = task                      # developer's original request, given to the researcher
         self.taint = Taint(policy["trusted_sources"])
-        self.tainted_deny = set(policy["tainted_session"]["deny"])
+        ts = policy["tainted_session"]
+        self.tainted_deny = set(ts["deny"])
+        self.hard_deny = set(ts.get("hard_deny", ts["deny"]))     # never delegated to the researcher
+        self.delegate = set(ts.get("delegate", []))               # researcher may approve these
+        self.review_log: list[dict] = []
         self.files = FileBoundary(policy, project_root)
         self.network = NetworkBoundary(policy)
         self.shell = ShellFilter()
@@ -66,8 +74,8 @@ class Guard:
         else:
             d = self._policy(tool, args)                      # stage 1
             if d.action != "deny":
-                d = self._tainted_sensitive(tool, args, d)    # stage 2
-            d = self._resolve_ask(d)
+                d = self._tainted_sensitive(tool, args, d)    # stage 2: hard deny | mark review
+            d = self._review(tool, args, d)                   # researcher / autonomous resolve
             if d.action == "allow":
                 d = self._inject_secrets(tool, args, d)
             self._count(d)
@@ -103,18 +111,38 @@ class Guard:
             return d
         kind = {"shell": self.shell.sensitive, "http_request": self.network.sensitive}.get(
             tool, lambda a: None)(args)
-        if kind in self.tainted_deny:
-            detail = d.reason or args.get("cmd") or args.get("url") or ""
-            return deny(f"'{kind}' is not allowed in a session tainted by "
-                        f"{self.taint.sources[0]} ({detail})")
+        if kind is None:
+            return d
+        detail = d.reason or args.get("cmd") or args.get("url") or ""
+        base = (f"'{kind}' in a session tainted by {self.taint.sources[0]} ({detail})")
+        # Hard set: never delegated. Without a researcher, everything in tainted_deny is hard.
+        hard = self.hard_deny if self.researcher else self.tainted_deny
+        if kind in hard:
+            return deny(base + " is not allowed")
+        if self.researcher and kind in self.delegate:
+            d.review = True
+            d.reason = base + " — needs review"
         return d
 
-    def _resolve_ask(self, d):
-        if d.action != "ask":
+    def _review(self, tool, args, d):
+        """Resolve 'ask' (ambiguous) and review-flagged decisions: researcher, or autonomous deny."""
+        needs = d.action == "ask" or getattr(d, "review", False)
+        if not needs:
             return d
         if self.mode == "interactive" and self.ask_human and self.ask_human(d.reason):
             return allow(d.args)
-        return deny(d.reason + " (autonomous mode: unknown hosts are denied)")
+        if self.researcher:
+            approve, why = self.researcher.review(
+                tool, args, d.reason, list(self.taint.sources), self.task)
+            rec = {"tool": tool, "args": args, "approve": approve, "rationale": why}
+            self.review_log.append(rec)
+            self.audit.write("researcher", {"tool": tool, "args": args},
+                             Decision("approve" if approve else "deny", why), self.taint)
+            return allow(args) if approve else deny(f"researcher denied: {why}")
+        # legacy autonomous behavior (no researcher): deny with reason
+        if d.action == "ask":
+            return deny(d.reason + " (autonomous mode: unknown hosts are denied)")
+        return deny(d.reason)
 
     # --- stage 3: secrets at egress, allowlisted hosts only ------------------
     def _inject_secrets(self, tool, args, d):
@@ -142,3 +170,25 @@ class Guard:
                 d.reason += f" | {self.max_denials} denials in a row: handing over to the human"
         else:
             self.consecutive_denials = 0
+
+
+class ReadOnlyReader:
+    """Read-only, boundary-checked file access for the researcher agent.
+    Routes through the guard's FileBoundary, so secret files (.env, *.pem) are refused."""
+    def __init__(self, files):
+        self.files = files
+
+    def list_files(self, path="."):
+        import os
+        root = self.files.root
+        out = []
+        for d, dirs, fs in os.walk(self.files.resolve(path)):
+            dirs[:] = [x for x in dirs if x not in (".git", "__pycache__", ".pytest_cache")]
+            out += [os.path.relpath(os.path.join(d, f), root) for f in fs]
+        return "\n".join(sorted(out)) or "(empty)"
+
+    def read_file(self, path):
+        d = self.files.check("read_file", {"path": path})
+        if d.action == "deny":
+            raise PermissionError(d.reason)
+        return self.files.resolve(path).read_text(errors="replace")[:6000]

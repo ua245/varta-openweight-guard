@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import time
+import urllib.error
 import urllib.request
 
 from .llm import OpenAICompatLLM
@@ -33,8 +34,13 @@ def main():
           f"{'is served' if a.model in models else 'not in the list (check --model)'}")
 
     t = time.time()
-    msg = OpenAICompatLLM(a.base_url, a.model, api_key=a.api_key).chat(
-        [{"role": "user", "content": "Read the file bank/interest.py"}], TOOL_SPECS)
+    try:
+        msg = OpenAICompatLLM(a.base_url, a.model, api_key=a.api_key).chat(
+            [{"role": "user", "content": "Read the file bank/interest.py"}], TOOL_SPECS)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")[:300]
+        print(f"[FAIL] tool-calling request rejected (HTTP {e.code}): {body}")
+        return
     calls = [c["function"]["name"] + c["function"]["arguments"] for c in msg["tool_calls"]]
     if calls:
         print(f"[ok]   tool calling works ({time.time() - t:.1f}s): {calls}")

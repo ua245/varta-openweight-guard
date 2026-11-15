@@ -24,3 +24,14 @@ class OpenAICompatLLM:
         if msg.get("reasoning"):
             out["reasoning"] = msg["reasoning"]   # kept for the log, not sent back
         return out
+
+    def describe_image(self, data_url: str, prompt: str) -> str:
+        """Vision-only call (no tools): used when this model is the agent's 'eyes'."""
+        body = {"model": self.model, "temperature": self.temperature, "messages": [
+            {"role": "user", "content": [{"type": "text", "text": prompt},
+                                         {"type": "image_url", "image_url": {"url": data_url}}]}]}
+        req = urllib.request.Request(
+            self.url, data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"})
+        with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            return json.load(resp)["choices"][0]["message"].get("content") or ""

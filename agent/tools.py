@@ -31,14 +31,18 @@ TOOL_SPECS = [
     _fn("view_image", "Look at an image file (png, jpg). The image is shown to you.", {"path": S}, ["path"]),
 ]
 
+VISION_PROMPT = "Describe this image in detail. Transcribe any text that appears in it."
+
 # The agent's shell never sees the developer's real environment variables.
 SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8"}
 
 
 class Tools:
-    def __init__(self, workspace, issues: dict, host_map: dict | None = None, sandbox=None, vision=None):
+    def __init__(self, workspace, issues: dict, host_map: dict | None = None, sandbox=None,
+                 vision=None):
         self.ws = Path(workspace)
         self.sandbox = sandbox          # guard.sandbox.DockerSandbox, or None = run on the host
+        self.vision = vision            # separate vision model (has describe_image), or None
         self.issues = issues            # {number: text}, stub for the GitHub API
         self.host_map = host_map or {}  # demo DNS: hostname -> "127.0.0.1:port"
         self.vision = vision            # optional separate vision LLM for view_image
@@ -87,7 +91,11 @@ class Tools:
     def _view_image(self, path):
         p = self._path(path)
         mime = mimetypes.guess_type(p.name)[0] or "image/png"
-        self.pending_images.append(f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode())
+        data_url = f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode()
+        if self.vision:   # option A: a separate vision model describes it, the agent gets text
+            text = self.vision.describe_image(data_url, VISION_PROMPT)
+            return f"Description of {path} (from the vision model):\n{text}"
+        self.pending_images.append(data_url)
         return f"image {path} loaded; it is shown in the next message"
 
     def _run_tests(self):
