@@ -1,0 +1,42 @@
+{
+  "mode": "autonomous",
+  "network": {
+    "allow": [
+      "pypi.org",
+      "github.com",
+      "api.github.com",
+      "api.mybank-internal.com"
+    ],
+    "unknown": "ask"
+  },
+  "files": {
+    "deny": [
+      ".env",
+      ".env.*",
+      "*.pem",
+      "*.key",
+      "~/.ssh",
+      "~/.aws",
+      "privileged"
+    ],
+    "write_only_in": "./"
+  },
+  "tainted_session": {
+    "deny": [
+      "git_push",
+      "network_unknown",
+      "install_package"
+    ]
+  },
+  "trusted_sources": [
+    "read_file",
+    "write_file",
+    "list_files",
+    "run_tests",
+    "shell"
+  ],
+  "handover_after_denials": 3,
+  "detector": {
+    "enabled": false
+  }
+}

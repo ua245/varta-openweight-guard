@@ -1,0 +1,46 @@
+{
+  "video_sha256": "a2b33f2e6c4b2bb33c21c69a2968c21a3cd79ba228ea86e8b608376074af639b",
+  "duration_seconds": 277.248,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "video_codec": "H.264",
+  "audio_codec": "AAC",
+  "embedded_english_subtitles": true,
+  "all_streams_decode": true,
+  "playback_speed": 1,
+  "time_compression": false,
+  "browser_errors": [],
+  "actual_runs_match_video": true,
+  "original_mail_and_signature_hashes_verified": true,
+  "payload_redecoded_from_both_saved_images": true,
+  "off_run_captured_synthetic_record": true,
+  "on_run_has_zero_capture_and_policy_denial": true,
+  "matched_inputs": true,
+  "both_business_tasks_passed": true,
+  "private_mailbox_password_absent_from_text_artifacts": true,
+  "key_frames": [
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/mail.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/payload.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/off_read.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/off_capture.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/off_done.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/on_block.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/on_done.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/drafts.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/compare.png",
+    "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/qa/finish.png"
+  ],
+  "media_inspection": "Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/Users/m.lopez/Documents/ChatGPT/verta/outputs/recorded-demo/verta-poc-demo.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomiso2avc1mp41\n    title           : VARTA Law Firm Prompt Injection PoC\n    encoder         : Lavf63.1.100\n    comment         : Actual local-model runs; synthetic data; offline synthetic narration\n  Duration: 00:04:37.28, start: 0.000000, bitrate: 242 kb/s\n  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuvj420p(pc, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 169 kb/s, 25 fps, 25 tbr, 12800 tbn (default)\n    Metadata:\n      handler_name    : VideoHandler\n      encoder         : Lavc63.1.100 libx264\n    Side data:\n      ICC Profile: (456 bytes)\n  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 24000 Hz, mono, fltp, 67 kb/s (default)\n    Metadata:\n      handler_name    : SoundHandler\n  Stream #0:2[0x3](eng): Subtitle: mov_text (tx3g / 0x67337874), 0 kb/s (default)\n    Metadata:\n      handler_name    : SubtitleHandler\nAt least one output file must be specified\n",
+  "audio_levels": "[Parsed_volumedetect_0 @ 0x1571046f0] histogram_5db: 5726\n[out#0/null @ 0x156629be0] video:0KiB audio:12996KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown\nsize=N/A time=00:04:37.24 bitrate=N/A speed=4.94e+03x elapsed=0:00:00.05    \n",
+  "browser_playback_verified": true,
+  "browser_playback_metadata": {
+    "duration": 277.28,
+    "width": 1920,
+    "height": 1080,
+    "audioTracks": 5418
+  },
+  "visual_review_completed": true,
+  "review_scope": "All contact sheets plus full-resolution frames of the source, payload, transfer, denial, briefs, and final comparison"
+}
