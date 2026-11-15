@@ -1,5 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="VARTA — watch a prompt-injection attack on an open-weight coding agent run with no guard, with the guard, and judged by a fine-tuned reviewer.">
+<meta property="og:title" content="Agent Guard Console — VARTA">
+<meta property="og:description" content="A prompt-injection attack, run three ways: no guard, guard, and a fine-tuned reviewer.">
+<style>html,body{margin:0;}</style>
 <title>Agent Guard Console</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap">
@@ -121,7 +129,8 @@
   .legend{margin-top:18px;font-family:var(--mono);font-size:.72rem;color:var(--faint);display:flex;flex-wrap:wrap;gap:14px;}
   .legend span{display:inline-flex;align-items:center;gap:6px;} .sw{width:10px;height:10px;border-radius:3px;}
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <div class="topbar">
     <header>
@@ -358,3 +367,6 @@
   elLegend.innerHTML=legendFor();
 })();
 </script>
+
+</body>
+</html>
