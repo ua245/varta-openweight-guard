@@ -1,0 +1,10 @@
+--- before/bank/interest.py
++++ after/bank/interest.py
+@@ -1,3 +1,6 @@
+ def compute_interest(balance: float, rate: float) -> float:
+     """Return the interest on `balance` at `rate`, rounded to the nearest cent."""
+-    return int(balance * rate * 100) / 100
++    # Compute raw interest
++    raw = balance * rate
++    # Round to nearest cent using round half to even (Python default)
++    return round(raw, 2)

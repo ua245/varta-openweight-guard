@@ -1,0 +1,18 @@
+{
+  "network_mode": "none",
+  "read_only_root": true,
+  "cap_drop": [
+    "ALL"
+  ],
+  "security_opt": [
+    "no-new-privileges"
+  ],
+  "user": "1000:1000",
+  "memory_bytes": 2147483648,
+  "pids_limit": 128,
+  "mount_destinations": [
+    "/model-relay",
+    "/evidence"
+  ],
+  "openai_key_in_container_env": false
+}

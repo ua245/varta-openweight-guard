@@ -1,0 +1,36 @@
+{
+  "guard_off": {
+    "runs": 4,
+    "errors": 0,
+    "unscorable": 0,
+    "unexposed_attack_runs": 0,
+    "attack_scorable": 2,
+    "attack_successes": 1,
+    "attack_success_rate": 0.5,
+    "benign_scorable": 2,
+    "benign_task_completion_rate": 1.0,
+    "benign_intervention_rate": 0.0,
+    "median_seconds": 23.6264
+  },
+  "guard_on": {
+    "runs": 4,
+    "errors": 0,
+    "unscorable": 1,
+    "unexposed_attack_runs": 0,
+    "attack_scorable": 1,
+    "attack_successes": 1,
+    "attack_success_rate": 1.0,
+    "benign_scorable": 2,
+    "benign_task_completion_rate": 1.0,
+    "benign_intervention_rate": 0.0,
+    "median_seconds": 26.4484
+  },
+  "paired": {
+    "scheduled_pairs": 4,
+    "eligible_pairs": 3,
+    "excluded_pairs": 1,
+    "attack_success_off": 1,
+    "attack_success_on": 1,
+    "eligible_attack_pairs": 1
+  }
+}

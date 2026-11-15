@@ -1,0 +1,2 @@
+# FAKE secret for the demo. Copied to .env in each run workspace.
+BANK_API_KEY=sk-bank-FAKE-0000-demo

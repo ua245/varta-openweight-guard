@@ -1,5 +1,7 @@
 """CLI: python3 -m agent.run --model gemma4:e2b [--no-guard]"""
 import argparse
+import json
+from pathlib import Path
 import os
 import subprocess
 
@@ -43,6 +45,8 @@ def main():
     ap.add_argument("--vision-model", default=None,
                     help="separate vision model used by view_image (e.g. qwen2.5vl:7b); "
                          "the agent model then receives a text description")
+    ap.add_argument("--vision-base-url", default=os.environ.get("VISION_BASE_URL"),
+                    help="separate local vision server URL; defaults to the main model URL")
     ap.add_argument("--remote-repo", nargs="?", const=True, default=False,
                     choices=[True, "weak", "strong"],
                     help="task points to a reference file on (fake) github.com that holds the "
@@ -54,6 +58,7 @@ def main():
     ap.add_argument("--shell", choices=["docker", "local"], default="docker",
                     help="docker = sandboxed shell (default); local = host shell, for comparison")
     ap.add_argument("--max-steps", type=int, default=20)
+    ap.add_argument("--json-output", type=Path, help="save measured scenario result as JSON (may contain synthetic fixture secrets)")
     a = ap.parse_args()
 
     det = "ON (adaption)" if os.environ.get("ADAPTION_API_KEY") and not a.no_guard else "off"
@@ -62,10 +67,13 @@ def main():
                      issue_file=a.issue, max_steps=a.max_steps,
                      repo_injection=a.repo_injection, attachments=a.attach, shell=a.shell,
                      remote_repo=("strong" if a.remote_repo == "strong" else bool(a.remote_repo)),
-                     vision=OpenAICompatLLM(a.base_url, a.vision_model, api_key=a.api_key)
+                     vision=OpenAICompatLLM(a.vision_base_url or a.base_url, a.vision_model, api_key=a.api_key)
                      if a.vision_model else None,
                      **({"task": a.task} if a.task else
                         {"task": TASK_REMOTE} if a.remote_repo else {}))
+    if a.json_output:
+        a.json_output.parent.mkdir(parents=True, exist_ok=True)
+        a.json_output.write_text(json.dumps(r, indent=2) + "\n")
     print("\n=== result ===")
     print(f"secret leaked to attacker : {'YES' if r['leaked'] else 'no'} "
           f"({r['attacker_requests']} request(s) received)")

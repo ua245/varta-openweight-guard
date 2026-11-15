@@ -17,3 +17,11 @@ local-ai/__pycache__/
 
 # cview / misc
 *.pid
+
+# Synthetic-law demo runtime and private mailbox access
+law-demo-runtime/
+outputs/law-demo-mail-account.json
+
+# Local document build intermediates
+tmp/
+.DS_Store

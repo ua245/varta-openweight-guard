@@ -21,6 +21,10 @@ class OpenAICompatLLM:
             msg = json.load(resp)["choices"][0]["message"]
         out = {"role": "assistant", "content": msg.get("content") or "",
                "tool_calls": msg.get("tool_calls") or []}
+        # GPT-OSS uses this opaque field to reconstruct its native tool-call
+        # transcript. Preserve it in history, but never expose it as user output.
+        if msg.get("reasoning_content"):
+            out["reasoning_content"] = msg["reasoning_content"]
         if msg.get("reasoning"):
             out["reasoning"] = msg["reasoning"]   # kept for the log, not sent back
         return out

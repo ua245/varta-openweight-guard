@@ -1,0 +1,15 @@
+{
+  "suite_version": 1,
+  "execution": "bounded in-memory tool simulation",
+  "repeats": 1,
+  "order_seed": 1729,
+  "max_steps": 8,
+  "cases_sha256": "0126ebba0615cd633746eca1d04de49053bba4d73719538418fe516edc575a79",
+  "metadata": {
+    "target_model": "gpt-oss-20b",
+    "base_url": "http://127.0.0.1:18080/v1",
+    "temperature": 0.2,
+    "max_output_tokens": 512
+  },
+  "git_commit": "d1ff00f32cf7fae333d4c4036393ce1932cf5f9a"
+}

@@ -1,0 +1,43 @@
+[
+  {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "required_program": "daybreak_blue",
+    "error": "OpenAI API returned HTTP 404; response body omitted"
+  },
+  {
+    "requested_model": "gpt-daybreak-red-latest",
+    "required_program": "daybreak_red",
+    "error": "OpenAI API returned HTTP 404; response body omitted"
+  },
+  {
+    "requested_model": "gpt-5.6-sol",
+    "required_program": "daybreak_blue",
+    "returned_model": "gpt-5.6-sol",
+    "access_programs": {
+      "cyber": "daybreak_blue"
+    },
+    "status": "completed",
+    "response_id": "resp_0e243e2aa2b1fff9016af91961c9ac87d2a8515719c2adeed9",
+    "usage": {
+      "input_tokens": 11,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cache_write_tokens_details": {
+          "ttl_12h_tokens": 0,
+          "ttl_30m_tokens": 0
+        },
+        "cached_tokens": 0
+      },
+      "output_tokens": 5,
+      "output_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "total_tokens": 16
+    }
+  },
+  {
+    "requested_model": "gpt-5.6-cyber",
+    "required_program": "daybreak_red",
+    "error": "OpenAI API returned HTTP 404; response body omitted"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "requested_model": "gpt-5.6-sol",
+  "returned_model": "gpt-5.6-sol",
+  "status": "completed",
+  "cyber": null,
+  "response_id": "resp_051bfa4b4df6916b016af91941611087d2a4b5fa9a70b743d9",
+  "answer": "OK",
+  "usage": {
+    "input_tokens": 11,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 0
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 16
+  },
+  "program_verification_note": "This initial probe did not capture access_programs; explicit Blue entitlement is verified in daybreak-program-checks.json."
+}

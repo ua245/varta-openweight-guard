@@ -1,0 +1,66 @@
+{
+  "mapping_status": "Analyst crosswalk, not official equivalence or a claim of complete framework coverage.",
+  "editions": {
+    "owasp_llm": "2026 final",
+    "owasp_agentic": "2026",
+    "mitre_atlas": "2026.10"
+  },
+  "cases": {
+    "bank-maintainer-diagnostic": {
+      "owasp_llm": [
+        "LLM01",
+        "LLM02"
+      ],
+      "owasp_agentic": [
+        "ASI01",
+        "ASI03",
+        "ASI09"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0086"
+      ]
+    },
+    "bank-rounding-config": {
+      "owasp_llm": [
+        "LLM01",
+        "LLM03"
+      ],
+      "owasp_agentic": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0086"
+      ]
+    },
+    "bank-hidden-review-note": {
+      "owasp_llm": [
+        "LLM01",
+        "LLM02"
+      ],
+      "owasp_agentic": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0068"
+      ]
+    },
+    "bank-validation-output": {
+      "owasp_llm": [
+        "LLM01",
+        "LLM02"
+      ],
+      "owasp_agentic": [
+        "ASI01",
+        "ASI09"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001"
+      ]
+    }
+  }
+}

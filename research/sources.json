@@ -1,0 +1,469 @@
+{
+  "schema_version": 1,
+  "retrieved_date": "2026-11-15",
+  "scope": "Authorized synthetic local lab only; no production targets or billable API calls.",
+  "taxonomy_versions": {
+    "owasp_llm": "2026 final (2026-08-04)",
+    "owasp_llm_historical": "2025",
+    "owasp_agentic": "2026 (published 2025-12-09)",
+    "mitre_atlas": "2026.10"
+  },
+  "mapping_note": "Analytical crosswalk; select applicable impacts per case. ASI04 requires supply-chain compromise; ASI03 requires identity/privilege misuse; ASI05 requires a code-execution objective. Do not infer them from every injection. ASI08 applies only to measured cascading propagation.",
+  "sources": [
+    {
+      "id": "owasp_llm_2026",
+      "title": "OWASP Top 10 for Large Language Model Applications — official repository",
+      "url": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10",
+      "published_date": "2026-08-04",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "2026 final release published 2026-08-04; canonical source is 2026/final."
+      ],
+      "commit": "9253e38ade58e959b531c0c5c9a4842272c9cd0e"
+    },
+    {
+      "id": "owasp_llm_2025",
+      "title": "2025 Top 10 Risk & Mitigations for LLMs and Gen AI Apps",
+      "url": "https://genai.owasp.org/llm-top-10/",
+      "published_date": null,
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "2025 category IDs and names used for the historical crosswalk."
+      ]
+    },
+    {
+      "id": "owasp_llm01_2026",
+      "title": "LLM01:2026 Prompt Injection",
+      "url": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/9253e38ade58e959b531c0c5c9a4842272c9cd0e/2026/final/LLM01_PromptInjection.md",
+      "published_date": "2026-08-04",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "Direct, retrieved, tool-output and memory delivery surfaces; encoding and propagation dimensions."
+      ],
+      "commit": "9253e38ade58e959b531c0c5c9a4842272c9cd0e"
+    },
+    {
+      "id": "owasp_llm03_2026",
+      "title": "LLM03:2026 Excessive Agency",
+      "url": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/9253e38ade58e959b531c0c5c9a4842272c9cd0e/2026/final/LLM03_ExcessiveAgency.md",
+      "published_date": "2026-08-04",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "Excess functionality, permissions and autonomy can enable unintended actions."
+      ],
+      "commit": "9253e38ade58e959b531c0c5c9a4842272c9cd0e"
+    },
+    {
+      "id": "owasp_llm08_2026",
+      "title": "LLM08:2026 Hidden Context Exposure",
+      "url": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/9253e38ade58e959b531c0c5c9a4842272c9cd0e/2026/final/LLM08_HiddenContextExposure.md",
+      "published_date": "2026-08-04",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "Hidden context exposure supersedes the narrower system-prompt leakage category; impact depends on context contents."
+      ],
+      "commit": "9253e38ade58e959b531c0c5c9a4842272c9cd0e"
+    },
+    {
+      "id": "owasp_llm10_2026",
+      "title": "LLM10:2026 Improper Output Handling",
+      "url": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/9253e38ade58e959b531c0c5c9a4842272c9cd0e/2026/final/LLM10_ImproperOutputHandling.md",
+      "published_date": "2026-08-04",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "Automatic resource fetches and unsafe downstream use of generated content create distinct output-handling risks."
+      ],
+      "commit": "9253e38ade58e959b531c0c5c9a4842272c9cd0e"
+    },
+    {
+      "id": "owasp_agentic_2026",
+      "title": "OWASP Top 10 for Agentic Applications 2026",
+      "url": "https://genai.owasp.org/download/52117/?tmstv=1765059207",
+      "published_date": "2025-12-09",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_framework",
+      "supported_claims": [
+        "ASI01 goal hijack; ASI02 tool misuse; ASI03 identity/privilege; ASI04 supply chain; ASI05 code execution; ASI06 memory/context; ASI07 inter-agent; ASI08 cascading failures; ASI09 human-agent trust; ASI10 rogue agents."
+      ],
+      "release_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "mitre_atlas_2026_10",
+      "title": "MITRE ATLAS authoritative data — 2026.10",
+      "url": "https://raw.githubusercontent.com/mitre-atlas/atlas-data/f56c1468731d6428e5bf875263b4643b46d67437/dist/v6/ATLAS-2026.10.yaml",
+      "published_date": null,
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "official_taxonomy",
+      "supported_claims": [
+        "Validated technique IDs used by family mappings."
+      ],
+      "commit": "f56c1468731d6428e5bf875263b4643b46d67437",
+      "modified_date": "2026-10-28",
+      "authority_url": "https://github.com/mitre-atlas/atlas-data"
+    },
+    {
+      "id": "github_copilot_issue",
+      "title": "Safeguarding VS Code against prompt injections",
+      "url": "https://github.blog/security/vulnerability-research/safeguarding-vs-code-against-prompt-injections/",
+      "published_date": "2025-08-25",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "controlled_vendor_redteam",
+      "supported_claims": [
+        "GitHub Security Lab demonstrated issue-content injection crossing local-read and outbound-request tool boundaries and describes fixes."
+      ],
+      "updated_date": "2026-07-06",
+      "in_the_wild_exploitation_established": false
+    },
+    {
+      "id": "echoleak_discoverer",
+      "title": "Breaking down EchoLeak, the First Zero-Click AI Vulnerability Enabling Data Exfiltration from Microsoft 365 Copilot",
+      "url": "https://www.catonetworks.com/blog/breaking-down-echoleak/",
+      "published_date": "2025-05-31",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "controlled_vulnerability_research",
+      "supported_claims": [
+        "Discoverer demonstrated email-to-privileged-context disclosure and rendering-based exfiltration; reports no known affected customers."
+      ],
+      "publication_date_note": "Migrated page display date; contemporaneous company announcement is 2025-06-11.",
+      "in_the_wild_exploitation_established": false
+    },
+    {
+      "id": "echoleak_announcement",
+      "title": "Aim Security Launches Aim Labs with Elite Researchers from Google and Israel’s Unit 8200 to Advance AI Security",
+      "url": "https://www.businesswire.com/news/home/20250611349150/en/Aim-Security-Launches-Aim-Labs-with-Elite-Researchers-from-Google-and-Israels-Unit-8200-to-Advance-AI-Security",
+      "published_date": "2025-06-11",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "first_party_company_announcement",
+      "supported_claims": [
+        "Contemporaneous company announcement of EchoLeak disclosure."
+      ]
+    },
+    {
+      "id": "echoleak_msrc",
+      "title": "CVE-2025-32711 — Microsoft Security Response Center",
+      "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-32711",
+      "published_date": null,
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "vendor_advisory",
+      "supported_claims": [
+        "Vendor advisory URL for the CVE; body unavailable to automated retrieval."
+      ],
+      "retrieval_limitation": "JavaScript-only page; technical claims rely on discoverer report."
+    },
+    {
+      "id": "invariant_mcp_poisoning",
+      "title": "MCP Security Notification: Tool Poisoning Attacks",
+      "url": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks",
+      "published_date": "2025-04-01",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "controlled_vulnerability_research",
+      "supported_claims": [
+        "Demonstrates descriptor poisoning, post-approval descriptor changes and cross-tool shadowing."
+      ],
+      "in_the_wild_exploitation_established": false
+    },
+    {
+      "id": "unit42_inwild",
+      "title": "Fooling AI Agents: Web-Based Indirect Prompt Injection Observed in the Wild",
+      "url": "https://unit42.paloaltonetworks.com/ai-agent-prompt-injection/",
+      "published_date": "2026-03-03",
+      "retrieved_date": "2026-11-15",
+      "evidence_type": "first_party_in_the_wild_telemetry",
+      "supported_claims": [
+        "Observed deployed malicious web instructions; reported intents do not prove every downstream action succeeded."
+      ],
+      "publication_date_basis": "article:published_time and JSON-LD datePublished",
+      "coding_agent_prevalence_established": false
+    }
+  ],
+  "families": [
+    {
+      "id": "authority_spoofing",
+      "name": "Authority and role spoofing",
+      "source_ids": [
+        "owasp_llm01_2026",
+        "unit42_inwild"
+      ],
+      "owasp_llm_2026": [
+        "LLM01"
+      ],
+      "owasp_llm_2025": [
+        "LLM01"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.000",
+        "AML.T0051.001"
+      ]
+    },
+    {
+      "id": "indirect_issue_repo",
+      "name": "Indirect issue and repository injection",
+      "source_ids": [
+        "github_copilot_issue"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM03"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM06"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0053"
+      ]
+    },
+    {
+      "id": "tool_output_laundering",
+      "name": "Tool-output instruction laundering",
+      "source_ids": [
+        "owasp_llm01_2026",
+        "mitre_atlas_2026_10"
+      ],
+      "owasp_llm_2026": [
+        "LLM01"
+      ],
+      "owasp_llm_2025": [
+        "LLM01"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0110.002"
+      ]
+    },
+    {
+      "id": "tool_description_poisoning",
+      "name": "Tool description poisoning",
+      "source_ids": [
+        "invariant_mcp_poisoning"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM04"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM03"
+      ],
+      "owasp_agentic_2026": [
+        "ASI02",
+        "ASI04"
+      ],
+      "mitre_atlas": [
+        "AML.T0110.000",
+        "AML.T0051.001"
+      ]
+    },
+    {
+      "id": "cross_tool_shadowing",
+      "name": "Cross-tool shadowing",
+      "source_ids": [
+        "invariant_mcp_poisoning"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM03"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM06"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0110.000",
+        "AML.T0053"
+      ]
+    },
+    {
+      "id": "tool_rug_pull",
+      "name": "Post-approval tool rug pull",
+      "source_ids": [
+        "invariant_mcp_poisoning"
+      ],
+      "owasp_llm_2026": [
+        "LLM04"
+      ],
+      "owasp_llm_2025": [
+        "LLM03"
+      ],
+      "owasp_agentic_2026": [
+        "ASI04"
+      ],
+      "mitre_atlas": [
+        "AML.T0109",
+        "AML.T0110.000"
+      ]
+    },
+    {
+      "id": "canary_exfiltration",
+      "name": "Canary disclosure through tool arguments",
+      "source_ids": [
+        "echoleak_discoverer",
+        "mitre_atlas_2026_10"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM02",
+        "LLM03"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM02",
+        "LLM06"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01",
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0086"
+      ]
+    },
+    {
+      "id": "output_render_exfiltration",
+      "name": "Generated-resource exfiltration channel",
+      "source_ids": [
+        "owasp_llm10_2026",
+        "echoleak_discoverer"
+      ],
+      "owasp_llm_2026": [
+        "LLM10",
+        "LLM02"
+      ],
+      "owasp_llm_2025": [
+        "LLM05",
+        "LLM02"
+      ],
+      "owasp_agentic_2026": [
+        "ASI02"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001"
+      ]
+    },
+    {
+      "id": "encoded_hidden_instruction",
+      "name": "Encoded or hidden instructions",
+      "source_ids": [
+        "mitre_atlas_2026_10",
+        "unit42_inwild"
+      ],
+      "owasp_llm_2026": [
+        "LLM01"
+      ],
+      "owasp_llm_2025": [
+        "LLM01"
+      ],
+      "owasp_agentic_2026": [
+        "ASI01"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0068"
+      ]
+    },
+    {
+      "id": "memory_poisoning",
+      "name": "Persistent memory poisoning",
+      "source_ids": [
+        "mitre_atlas_2026_10",
+        "owasp_agentic_2026"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM05"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM04"
+      ],
+      "owasp_agentic_2026": [
+        "ASI06"
+      ],
+      "mitre_atlas": [
+        "AML.T0080.000",
+        "AML.T0051.001"
+      ]
+    },
+    {
+      "id": "approval_bypass",
+      "name": "Action approval boundary bypass",
+      "source_ids": [
+        "github_copilot_issue",
+        "owasp_llm03_2026"
+      ],
+      "owasp_llm_2026": [
+        "LLM01",
+        "LLM03"
+      ],
+      "owasp_llm_2025": [
+        "LLM01",
+        "LLM06"
+      ],
+      "owasp_agentic_2026": [
+        "ASI02",
+        "ASI03",
+        "ASI05"
+      ],
+      "mitre_atlas": [
+        "AML.T0051.001",
+        "AML.T0053"
+      ]
+    },
+    {
+      "id": "self_replication",
+      "name": "Instruction self-replication",
+      "source_ids": [
+        "mitre_atlas_2026_10",
+        "owasp_llm01_2026"
+      ],
+      "owasp_llm_2026": [
+        "LLM01"
+      ],
+      "owasp_llm_2025": [
+        "LLM01"
+      ],
+      "owasp_agentic_2026": [
+        "ASI06"
+      ],
+      "mitre_atlas": [
+        "AML.T0061"
+      ]
+    }
+  ],
+  "mitre_techniques": {
+    "AML.T0051.000": "Direct",
+    "AML.T0051.001": "Indirect",
+    "AML.T0053": "AI Agent Tool Invocation",
+    "AML.T0061": "LLM Prompt Self-Replication",
+    "AML.T0068": "LLM Prompt Obfuscation",
+    "AML.T0080.000": "Memory",
+    "AML.T0086": "Exfiltration via AI Agent Tool Invocation",
+    "AML.T0109": "AI Supply Chain Rug Pull",
+    "AML.T0110.000": "Definition and Instructions",
+    "AML.T0110.002": "Runtime Response"
+  },
+  "harness_note": "Catalog coverage is not measured coverage. MCP descriptor/rug-pull, persistent-memory, renderer-fetch and multimodal cases must be catalog-only unless the harness implements the corresponding delivery surface. A file named memory is a file-read/write test unless persisted into a later model session."
+}

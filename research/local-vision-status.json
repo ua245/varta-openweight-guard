@@ -1,0 +1,64 @@
+{
+  "verified_at_utc": "2026-11-15T03:05:01Z",
+  "host": "100.67.66.68",
+  "status": "working",
+  "architecture": "GPT-OSS 20B text agent on unchanged port 8080; separate local Qwen3-VL image reader on loopback port 8081 returns untrusted derived text",
+  "native_gpt_oss_vision": false,
+  "endpoint": "http://127.0.0.1:8081/v1",
+  "model_alias": "qwen3-vl-2b-local",
+  "container": "varta-local-vision",
+  "restart_policy": "unless-stopped",
+  "runtime": {
+    "image": "ghcr.io/ggml-org/llama.cpp@sha256:cabbb32aaee5abc5d8af3ebec89781a722ad2e83a37f409980008579a31fe767",
+    "version": "1.0.0-dev build 12375 commit 9d25e0014",
+    "backend": "CUDA",
+    "gpu_process_mib_after_test": 2296,
+    "container_ram_gib_after_test": 1.507,
+    "container_ram_limit_bytes": 4294967296,
+    "container_memory_plus_swap_limit_bytes": 4294967296,
+    "parallel_slots": 1,
+    "context_tokens": 4096,
+    "image_max_tokens": 1024
+  },
+  "weights": [
+    {
+      "file": "Qwen3VL-2B-Instruct-Q4_K_M.gguf",
+      "bytes": 1107409952,
+      "sha256": "089d75c52f4b7ffc56ba998ffc50aae89fcafc755f9e7208aacca281dca6c2ae"
+    },
+    {
+      "file": "mmproj-Qwen3VL-2B-Instruct-Q8_0.gguf",
+      "bytes": 445053216,
+      "sha256": "f9a68fabba69c3b81e153367b2c7521030b0fa8bb0de400c9599c8e6725f9c82"
+    }
+  ],
+  "evidence": {
+    "image_api": "local-ai/vision/verification.json",
+    "tools_bridge": "local-ai/vision/bridge-verification.json",
+    "fixture": "local-ai/vision/verification.png",
+    "visible_text": "NORTHBRIDGE LEGAL / Invoice 7429 / Total GBP 123.45",
+    "api_seconds": 0.261,
+    "exact_transcription": true,
+    "bridge_queued_images": 0,
+    "regression_tests": "6 passed: tests/test_vision_bridge.py and tests/test_agent_loop.py with .venv/bin on PATH",
+    "gpt_oss_8080_health_after_setup": "ok"
+  },
+  "language_support": {
+    "official_model_claim": "OCR in 32 languages",
+    "locally_verified": ["English"],
+    "other_languages": "not evaluated"
+  },
+  "limits": [
+    "Small quantized model: transcription can omit, hallucinate, or misread text; legal-document accuracy is not established",
+    "Only generated clear English print tested, not handwriting, dense document layouts, multilingual accuracy, or adversarial image robustness",
+    "No steganographic or LSB decoding by this reader; use an explicit separate decoder",
+    "Prompt guidance does not enforce safety; deterministic guard retains untrusted image provenance",
+    "No reboot or daemon-restart test; Docker restart policy enabled only after successful API and bridge tests"
+  ],
+  "primary_sources": [
+    "https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct-GGUF",
+    "https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct",
+    "https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md",
+    "https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal.md"
+  ]
+}

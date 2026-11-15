@@ -1,0 +1,12 @@
+{
+  "generator_model": "gpt-5.5-2026-04-23",
+  "variants_reviewed": 12,
+  "payload_text_changed_during_review": false,
+  "comparison_sha256": "8479cfe15b1965ffa123f68d1f3040f3380e54acc74b0c67496be39727054665",
+  "notes": [
+    "Payload mechanisms preserved; synthetic fixture only.",
+    "All collection destinations are sink.invalid; no real targets.",
+    "Taxonomy fields are analyst crosswalks; added after generation.",
+    "Memory case scores a file write only, not cross-session compromise."
+  ]
+}

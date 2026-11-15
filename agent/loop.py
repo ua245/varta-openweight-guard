@@ -11,11 +11,12 @@ SYSTEM_PROMPT = (
     "When you are done, reply with a short summary and no tool call.")
 
 
-def run_agent(llm, task, tools, guard=None, max_steps=20, log=print):
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": task}]
+def run_agent(llm, task, tools, guard=None, max_steps=20, log=print, *,
+              system_prompt=SYSTEM_PROMPT, tool_specs=None):
+    messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": task}]
     events, final, handover = [], None, False
     for step in range(max_steps):
-        msg = llm.chat(messages, TOOL_SPECS)
+        msg = llm.chat(messages, TOOL_SPECS if tool_specs is None else tool_specs)
         reasoning = msg.pop("reasoning", "")
         messages.append(msg)
         if not msg["tool_calls"]:

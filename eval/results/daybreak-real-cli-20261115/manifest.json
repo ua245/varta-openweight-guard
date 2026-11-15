@@ -1,0 +1,49 @@
+{
+  "execution": "real agent.run in outer Docker container; local capture server and real pytest",
+  "image_id": "sha256:30c65bff3e398052cc883b7fa2615ff4796da395d8644e43984d4997d6dbae1c",
+  "guard_toggle": "--no-guard only; guard on is default",
+  "network": "none; Unix relay permits only local model API",
+  "shell": "local inside outer container",
+  "model": "gpt-oss-20b",
+  "relay_settings": {
+    "seed": 1729,
+    "max_tokens": 512,
+    "reasoning_effort": "low"
+  },
+  "issues_sha256": {
+    "curated/bank-demo/bank-maintainer-diagnostic.md": "932355371b37fa8c897d7b46725caa2b9da547d8f207b5fe27b41eef194aec42",
+    "curated/bank-demo/bank-rounding-config.md": "df837ab0322d8d04d74a98f5c47f9ff251ebcb4849c79fc2b53ae2c1199027a7",
+    "curated/bank-demo/bank-hidden-review-note.md": "1ba2b7d016ed2a856dab54b7c39c93eaf8688c8bba6eca94f7abba4f68d723a2",
+    "curated/bank-demo/bank-validation-output.md": "797d83a9c576dcfa917f20f82205ceab017859ea2fd5cbad83cd2a570882748e",
+    "curated/bank-demo/benign-rounding.md": "aacfa4365e89ce730264009f23ac63f63a9446c038b7985fe6974036a6c90916"
+  },
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/attacker.py": "ec2b49c8d3f6ac262e69bac4e8534c0b9ad0c2c10330724a6a68a0ca8e50921e",
+    "agent/check.py": "1a660aaf8addb027808b74be3997d2359f2369aae72d23c8907b74df514ff144",
+    "agent/llm.py": "8a176b5d3a0c978791910729b3a3f1260448ec6f88cdc7bf00eec0886c2e2645",
+    "agent/loop.py": "cadd1af05d8205f57f1ba5c7a116c9e94857d563adda8cc9be6665f71ecd38ad",
+    "agent/run.py": "13f19476e2f42c16daf3b7b1cf95adcfb01a884a566ad701213de41810c5bda6",
+    "agent/scenario.py": "549700971ef27ddc701f6e7a002dd2df81a8ea578e03b9698d670cd6765790e6",
+    "agent/tools.py": "6b14327f8998a394a8e62b856974411a517fe4f2028735e5ef3dfe38f904af59",
+    "guard/__init__.py": "c81dbac5e82da308dfcab856c4e6ef3c7aa7218c552c2b49370c17de6301ba6e",
+    "guard/audit.py": "2a8c537b11fbeeb4c72259acef756c90b1e8f3e6d7420f830569e4055e5558cb",
+    "guard/core.py": "5d053af8ca435ff69fb3a43e6fe223d00d33c230f6e4f3fc8fc16af756aab324",
+    "guard/decision.py": "d4f1ef210de44473f51a9e48bdce07adb427e4ee62c7a2c658a517f1ac92e2bf",
+    "guard/detector.py": "5fe976a0a49357646c1129abf7332e945a9b1d8fd70c36608a75973bba5ba1c6",
+    "guard/files.py": "a7e94520a7b0d6244ec52191db50ef64712cb6aff185ac3e6f3dbe7dd8aef2ec",
+    "guard/network.py": "5d4277526ca05682baeaa974fe32982107930734d28517ba76e83675ad7c4f1d",
+    "guard/policy.py": "a21bdbe52d8dc1a5d0056daf25ac7c4d81e4a78c2d0b211ce3d2aaf082bf4f3f",
+    "guard/sandbox.py": "690c258183bf12cc348042adf38ebbeb1eb9f2bce0b5ab63372b76651262453d",
+    "guard/scan.py": "7688dafdd61b3b8830e9eeda411471aadcc5040fed8e31cbff0aa7ddfe95198f",
+    "guard/secrets.py": "19f0f927535e995f3e66447194ea08a757dc0a708e0ff8ad82bcb2b779e975a3",
+    "guard/shell.py": "7c89836e3c42457a9f826144de959bcaca38c8fe5b87ef90b5e054bae38a10b6",
+    "guard/taint.py": "9c5a0a8ddffcc77b41e5ccd0dd34f30171e0651300d296931c092f8fbc9ab460",
+    "eval/demo/__init__.py": "56c61ac0c4eb991783d9605c40af40f9bf38e86870810c8556395e4728356550",
+    "eval/demo/container_entry.py": "01fc7fc425e90ade532c8addb2f0521ee48fb3f171c5786529a792341ba6c215",
+    "eval/demo/curate.py": "e45227a3b0f5c987e07a2babc0b08d4e71f2a0aa001acec73d6ea13d896b1182",
+    "eval/demo/relay.py": "3a1b15404cbeca5af0dd14f827c9711f87a9c2143d9f670aaef6367629b8e19c",
+    "eval/demo/run.py": "95969fe29ab57481339ada64db30d5e6e9465a37c34b205fe912c3005eba4419"
+  },
+  "policy_sha256": "d94f3e5a5aae9006cb24d3f12084cbb2230f32f09ca94559e577120f632b9be2"
+}

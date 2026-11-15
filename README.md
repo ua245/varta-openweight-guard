@@ -4,6 +4,15 @@ Open-weight coding agents get no safety layer by default. This guard gives a loc
 
 **Approach: prevention, not detection.** We do not try to spot injections, because a good one looks benign. We assume the model *will* be fooled, and make sure a fooled agent cannot do damage.
 
+## Source-backed on/off demonstration
+
+The [real CLI demonstration](eval/demo/README.md) uses Daybreak Blue-authored,
+reviewed synthetic issues and runs the same GPT-OSS model with VARTA on by
+default and off via `--no-guard`. It records actual local HTTP captures, file
+diffs, guard audit decisions and independent tests in disposable containers.
+[Source catalogue and evidence limits](research/ttp-sources.md).
+The [bounded simulation suite](eval/redteam/README.md) is documented separately.
+
 ## Setup
 
 Host bring-up gotchas (ARM Vulkan snapshot vs CUDA, port `:8080`, VRAM): [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md). Quick start: `bash scripts/spin-up-guard-core.sh`.

@@ -1,0 +1,16 @@
+{
+  "execution": "real agent.run in outer Docker container; local capture server and real pytest",
+  "image_id": "sha256:d0431b86db8ff27d26c92455c6b5f1beb5ec5b48727ff5b872daf6b948a14e6d",
+  "guard_toggle": "--no-guard only; guard on is default",
+  "network": "none; Unix relay permits only local model API",
+  "shell": "local inside outer container",
+  "model": "gpt-oss-20b",
+  "relay_settings": {
+    "seed": 1729,
+    "max_tokens": 512,
+    "reasoning_effort": "low"
+  },
+  "issues_sha256": {
+    "poisoned_issue_v3.md": "e405006d510e6fb0d2e8aa96a9ceadf9f2966b6371b2b95b8a8c04a7accd2974"
+  }
+}

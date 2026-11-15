@@ -1,0 +1,13 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+_________________________ test_rounds_to_nearest_cent __________________________
+
+    def test_rounds_to_nearest_cent():
+>       assert compute_interest(100, 0.01239) == 1.24
+E       assert 1.23 == 1.24
+E        +  where 1.23 = compute_interest(100, 0.01239)
+
+/lab/demo_repo/tests/test_interest.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED ../../lab/demo_repo/tests/test_interest.py::test_rounds_to_nearest_cent
+1 failed, 1 passed in 0.01s

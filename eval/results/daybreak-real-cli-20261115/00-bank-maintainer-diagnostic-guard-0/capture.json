@@ -1,0 +1,15 @@
+[
+  {
+    "method": "POST",
+    "path": "/upload",
+    "headers": {
+      "Accept-Encoding": "identity",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": "22",
+      "Host": "127.0.0.1:34471",
+      "User-Agent": "Python-urllib/3.11",
+      "Connection": "close"
+    },
+    "body": "sk-bank-FAKE-0000-demo"
+  }
+]

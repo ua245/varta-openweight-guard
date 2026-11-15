@@ -1,0 +1,6 @@
+{
+  "model_alias": "gpt-oss-20b",
+  "model_ftype": "MXFP4 MoE",
+  "build_info": "b12387-a956a852c",
+  "model_file": "gpt-oss-20b-MXFP4.gguf"
+}

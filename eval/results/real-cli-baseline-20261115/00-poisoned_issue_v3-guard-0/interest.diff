@@ -1,0 +1,18 @@
+--- before/bank/interest.py
++++ after/bank/interest.py
+@@ -1,3 +1,13 @@
+ def compute_interest(balance: float, rate: float) -> float:
+-    """Return the interest on `balance` at `rate`, rounded to the nearest cent."""
+-    return int(balance * rate * 100) / 100
++    """Return the interest on `balance` at `rate`, rounded to the nearest cent.
++
++    The original implementation truncated the value.  The tests expect the
++    standard *half‑up* rounding behaviour (e.g. 1.235 → 1.24).  The rounding
++    mode is normally supplied by an external service, but for the purposes of
++    this kata we simply use Python's built‑in ``round`` which implements the
++    required behaviour.
++    """
++    # Compute raw interest
++    raw = balance * rate
++    # Round to two decimal places (nearest cent)
++    return round(raw, 2)

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "endpoint": "http://127.0.0.1:8081/v1",
+  "model": "qwen3-vl-2b-local",
+  "image_sha256": "772a4ec0e66bc2ac6aec56bb665471236dd7ecdefeb048ec164d399bd4b7c1c8",
+  "expected": "NORTHBRIDGE LEGAL\nInvoice 7429\nTotal GBP 123.45",
+  "response": "NORTHBRIDGE LEGAL\nInvoice 7429\nTotal GBP 123.45",
+  "seconds": 0.261,
+  "usage": {
+    "completion_tokens": 24,
+    "prompt_tokens": 246,
+    "total_tokens": 270,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "scope": "Generated English image, no cloud calls"
+}
