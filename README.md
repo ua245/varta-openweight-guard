@@ -1,4 +1,8 @@
-# Open-Weight Agent Guard
+
+<img width="2051" height="544" alt="image" src="https://github.com/user-attachments/assets/66fd0bb7-ca5e-4769-aeaa-fbfd57343f3e" />
+# VERTA
+
+## Open-Weight Agent Guard
 
 Open-weight coding agents get no safety layer by default. This guard gives a local coding agent the protections closed models ship with, so it can run autonomously without being hijacked by prompt injection.
 
