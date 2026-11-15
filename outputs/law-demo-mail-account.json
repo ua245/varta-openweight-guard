@@ -1,0 +1,8 @@
+{
+  "username": "associate@kingsbridge.test",
+  "password": "TA4SVkjKguPepHW2JmrsI0CBXK0",
+  "imap_host": "127.0.0.1",
+  "imap_port": 1144,
+  "smtp_host": "127.0.0.1",
+  "smtp_port": 2526
+}

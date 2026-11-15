@@ -1,0 +1,14 @@
+{
+  "duration": 8.981178875001206,
+  "cues": [
+    {
+      "key": "intro",
+      "start": 0.038,
+      "duration": 7.291083333333333,
+      "text": "This is Varta, a tool security guard for an AI agent. We will process the same email with Varta off, then on.",
+      "caption": "A routine email. A privileged file. One enforced boundary."
+    }
+  ],
+  "raw_video": "/Users/m.lopez/Documents/ChatGPT/verta/tmp/hackathon-recording/frames-819f2698/capture.ffconcat",
+  "capture_backend": "timestamped_browser_frames"
+}
