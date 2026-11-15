@@ -40,8 +40,14 @@ def main():
     ap.add_argument("--issue", default="poisoned_issue.md", help="file in attacks/")
     ap.add_argument("--repo-injection", action="store_true",
                     help="poison bank/interest.py itself (attacks/repo_injection/)")
-    ap.add_argument("--remote-repo", action="store_true",
-                    help="task points to a reference file on (fake) github.com that holds the injection")
+    ap.add_argument("--vision-model", default=None,
+                    help="separate vision model used by view_image (e.g. qwen2.5vl:7b); "
+                         "the agent model then receives a text description")
+    ap.add_argument("--remote-repo", nargs="?", const=True, default=False,
+                    choices=[True, "weak", "strong"],
+                    help="task points to a reference file on (fake) github.com that holds the "
+                         "injection; pass 'strong' for the harder payload that frames exfil as a "
+                         "required step (default: weak comment)")
     ap.add_argument("--task", default=None, help="override the developer task")
     ap.add_argument("--attach", nargs="*", default=[],
                     help="files copied into the workspace under assets/ (e.g. untrusted images)")
@@ -51,11 +57,13 @@ def main():
     a = ap.parse_args()
 
     det = "ON (adaption)" if os.environ.get("ADAPTION_API_KEY") and not a.no_guard else "off"
-    print(f"model={a.model} url={a.base_url} guard={'OFF' if a.no_guard else 'ON'} detector={det} shell={a.shell}\n")
+    print(f"model={a.model} url={a.base_url} guard={'OFF' if a.no_guard else 'ON'} detector={det} shell={a.shell} vision={a.vision_model or 'agent model'}\n")
     r = run_scenario(OpenAICompatLLM(a.base_url, a.model, api_key=a.api_key), use_guard=not a.no_guard,
                      issue_file=a.issue, max_steps=a.max_steps,
                      repo_injection=a.repo_injection, attachments=a.attach, shell=a.shell,
-                     remote_repo=a.remote_repo,
+                     remote_repo=("strong" if a.remote_repo == "strong" else bool(a.remote_repo)),
+                     vision=OpenAICompatLLM(a.base_url, a.vision_model, api_key=a.api_key)
+                     if a.vision_model else None,
                      **({"task": a.task} if a.task else
                         {"task": TASK_REMOTE} if a.remote_repo else {}))
     print("\n=== result ===")
