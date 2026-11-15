@@ -1,7 +1,7 @@
 
 <img width="2051" height="544" alt="image" src="https://github.com/user-attachments/assets/66fd0bb7-ca5e-4769-aeaa-fbfd57343f3e" />
 
-# VERTA
+# VARTA
 
 ## Open-Weight Agent Guard
 
