@@ -79,7 +79,7 @@ output is empty and the network is unreachable.
   **Decision: we stay on local Gemma.** Honest demo wording: "the model is served by a separate
   API; switching servers means changing one URL".
 - **Keys:** in `.env` (gitignored, permissions 600): `ADAPTION_API_KEY`, `TAVILY_API_KEY`.
-  Placeholders in `example.env`. Tavily is not wired yet.
+  Placeholders in `.env.example`. Tavily is not wired yet.
 - **Teammate:** building the harness for the fine-tuned model as layer 2. Contract: a class with
   `scan(text) -> bool` that raises `DetectorError` when unsure, has no tools, and can only tighten.
 

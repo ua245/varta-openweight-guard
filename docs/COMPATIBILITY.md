@@ -34,7 +34,7 @@ A FreeToken Qwen3-8B worker held ~7 GB VRAM. Starting GPT-OSS beside it fails 
 ### 5. `guard-core` agent defaults still pointed at Gemma/Ollama
 `agent.check` / `agent.run` defaulted to `gemma4:e2b` and Windows-WSL Ollama URLs from the hackathon laptop notes. On the Ubuntu GPU box nothing listened there.
 
-**Fix:** `example.env` + spin-up script default to `AGENT_BASE_URL=http://127.0.0.1:8080/v1` and `AGENT_MODEL=gpt-oss-20b`.
+**Fix:** `.env.example` + spin-up script default to `AGENT_BASE_URL=http://127.0.0.1:8080/v1` and `AGENT_MODEL=gpt-oss-20b`.
 
 ### 6. `Tools(..., vision=...)` TypeError risk
 `agent/run.py` / `scenario.py` pass `vision=` into `Tools`, but `Tools.__init__` did not accept it — fine until `--vision-model` is used.
@@ -55,7 +55,7 @@ Bank mailbox / summarize / OCR lived only as ad-hoc host setup. Health checks al
 
 ```bash
 # 1) secrets
-cp example.env .env   # fill ADAPTION_API_KEY / TAVILY_API_KEY; chmod 600 .env
+cp .env.example .env   # fill ADAPTION_API_KEY / TAVILY_API_KEY; chmod 600 .env
 
 # 2) weights (exact repo revision + SHA)
 #    → $HOME/ai/models/gpt-oss-20b/gpt-oss-20b-MXFP4.gguf + .verified.json

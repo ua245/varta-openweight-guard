@@ -20,3 +20,4 @@ llm-map/target/
 llm_map.json
 local-ai/__pycache__/
 local-ai/validation.local.json
+eval/results/

@@ -8,8 +8,8 @@ if [[ -f .env ]]; then
   set -a; # shellcheck disable=SC1091
   source .env; set +a
 else
-  echo "No .env — copy example.env and fill keys:" >&2
-  echo "  cp example.env .env && chmod 600 .env" >&2
+  echo "No .env — copy .env.example and fill keys:" >&2
+  echo "  cp .env.example .env && chmod 600 .env" >&2
 fi
 
 export AGENT_BASE_URL="${AGENT_BASE_URL:-http://127.0.0.1:8080/v1}"

@@ -1,2 +1,6 @@
+# Core: the guard, the agent loop, the eval scripts and the tests.
+# All model/API calls use the Python standard library (urllib), so nothing else is needed.
 pyyaml
 pytest
+
+# Optional operator tooling (proxy server, bank-mail, cview) lives in requirements-tooling.txt.

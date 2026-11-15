@@ -1,0 +1,6 @@
+# Optional operator tooling, NOT needed for the guard, the agent or the demos.
+#   proxy/  (OpenAI-façade tool-gate server) · bank-mail/ (mail desk) · cview/ (coding view)
+# Install only if you run those services:  pip install -r requirements-tooling.txt
+fastapi
+httpx
+jinja2
