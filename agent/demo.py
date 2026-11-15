@@ -113,9 +113,9 @@ def run_phase(args, guard_on):
     sc = {k: v for k, v in SCENARIOS[args.scenario].items()
           if k not in ("kind", "label", "no_task_check")}
     sc.pop("attachments", None)
+    from .run import build_researcher_llm
     llm = OpenAICompatLLM(args.base_url, args.model, api_key=args.api_key)
-    res_llm = (OpenAICompatLLM(args.base_url, args.researcher_model, api_key=args.api_key)
-               if args.researcher_model and guard_on else None)
+    res_llm = build_researcher_llm(args.researcher_model, args.base_url, args.api_key) if guard_on else None
     print(c(f"\n  running {'WITH guard' if guard_on else 'WITHOUT guard'}… "
             f"(model is thinking)", "dim"))
     r = run_scenario(llm, use_guard=guard_on, shell=args.shell, max_steps=args.max_steps,

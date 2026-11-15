@@ -7,6 +7,18 @@ from .llm import OpenAICompatLLM
 from .scenario import TASK_REMOTE, run_scenario
 
 
+def build_researcher_llm(name, base_url, api_key):
+    """Researcher brain. 'adaption'/'stack:uvx' -> the fine-tuned Adaption model; else an
+    OpenAI-compatible local model. Both expose .chat(messages, tools), so the researcher is
+    model-agnostic. None -> no researcher (gray-zone calls are denied autonomously)."""
+    if not name:
+        return None
+    if name in ("adaption", "stack:uvx", "fine-tuned"):
+        from guard.adaption_model import AdaptionModel
+        return AdaptionModel()        # reads ADAPTION_API_KEY from the environment
+    return OpenAICompatLLM(base_url, name, api_key=api_key)
+
+
 def _short_args(args):
     return ", ".join(f"{k}={str(v)[:40]}" for k, v in args.items() if k in ("cmd", "url", "path"))
 
@@ -71,8 +83,7 @@ def main():
                      remote_repo=("strong" if a.remote_repo == "strong" else bool(a.remote_repo)),
                      vision=OpenAICompatLLM(a.base_url, a.vision_model, api_key=a.api_key)
                      if a.vision_model else None,
-                     researcher_llm=OpenAICompatLLM(a.base_url, a.researcher_model, api_key=a.api_key)
-                     if a.researcher_model else None,
+                     researcher_llm=build_researcher_llm(a.researcher_model, a.base_url, a.api_key),
                      **({"task": a.task} if a.task else
                         {"task": TASK_REMOTE} if a.remote_repo else {}))
     print("\n=== result ===")
