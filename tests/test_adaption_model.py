@@ -18,7 +18,9 @@ def test_messages_convert_to_responses_input():
         {"role": "tool", "tool_call_id": "c1", "content": "no secrets"},
     ]
     items = to_responses_input(msgs)
-    assert items[0] == {"role": "system", "content": "sys"}
+    from guard.adaption_model import split_instructions
+    assert split_instructions(msgs) == "sys"              # system -> top-level instructions
+    assert all(i.get("role") != "system" for i in items)  # not an input message
     assert {"type": "function_call", "call_id": "c1", "name": "inspect_payload",
             "arguments": "{}"} in items
     assert {"type": "function_call_output", "call_id": "c1", "output": "no secrets"} in items

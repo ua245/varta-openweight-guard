@@ -19,12 +19,17 @@ from .researcher import ResearcherError
 ADAPTION_URL = "https://api.prod.adaptionlabs.ai/api/v1/responses"
 
 
+def split_instructions(messages: list[dict]) -> str:
+    """Responses API takes the system prompt as top-level `instructions`, not an input message."""
+    return "\n\n".join(m.get("content") or "" for m in messages if m.get("role") == "system")
+
+
 def to_responses_input(messages: list[dict]) -> list[dict]:
-    """chat-completions messages -> Responses API input items."""
+    """chat-completions messages -> Responses API input items (system handled separately)."""
     items: list[dict] = []
     for m in messages:
         role = m.get("role")
-        if role in ("system", "user"):
+        if role == "user":
             items.append({"role": role, "content": m.get("content") or ""})
         elif role == "assistant":
             if m.get("content"):
@@ -80,6 +85,9 @@ class AdaptionModel:
     def complete(self, messages: list[dict], tools: list[dict]) -> dict:
         body = {"model": self.model, "input": to_responses_input(messages),
                 "tools": to_responses_tools(tools), "tool_choice": "auto", "store": False}
+        instructions = split_instructions(messages)
+        if instructions:
+            body["instructions"] = instructions
         req = urllib.request.Request(
             self.url, data=json.dumps(body).encode(),
             headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"})
