@@ -1,0 +1,12 @@
+[package]
+name = "llm-map"
+version = "0.1.0"
+edition = "2021"
+description = "Step 1: discover local open-weight / OSS LLM processes and write llm_map.json for the proxy"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.33"
+ureq = { version = "2", features = ["json"] }

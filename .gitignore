@@ -1,22 +1,22 @@
-__pycache__/
-*.pyc
-.pytest_cache/
-audit.jsonl
-.env
-.venv/
-.opencode/
-llm_map.json
-
 # bank-mail runtime
-bank-mail/data/
-bank-mail/logs/
-
-# local-ai runtime
-local-ai/validation.local.json
-local-ai/__pycache__/
-
 # cview / misc
+# local-ai runtime
 *.pid
+*.pyc
+*_test.jsonl
+.env
+.opencode/
+.pytest_cache/
+.venv/
+__pycache__/
+_fix_*.py
+_write_*.py
+audit.jsonl
 audit_proxy_test.jsonl
 audit_tavily_test.jsonl
-*_test.jsonl
+bank-mail/data/
+bank-mail/logs/
+llm-map/target/
+llm_map.json
+local-ai/__pycache__/
+local-ai/validation.local.json
