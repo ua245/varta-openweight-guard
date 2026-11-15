@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Host-adapted GPT-OSS 20B launcher (x86_64 + NVIDIA CUDA).
+# Same API contract as the ARM Vulkan snapshot on main:
+#   alias gpt-oss-20b, :8080/v1, ctx 16384, verified MXFP4 GGUF.
+set -euo pipefail
+
+MODEL_DIR="${GPT_OSS_MODEL_DIR:-$HOME/ai/models/gpt-oss-20b}"
+LLAMA_ROOT="${LLAMA_ROOT:-$HOME/ai/llama.cpp}"
+BIN="$(find "$LLAMA_ROOT" -type f -name llama-server 2>/dev/null | head -1 || true)"
+[[ -n "$BIN" && -x "$BIN" ]] || {
+  echo "llama-server not found under $LLAMA_ROOT" >&2
+  echo "Install a CUDA build from https://github.com/ggml-org/llama.cpp/releases" >&2
+  exit 1
+}
+LIBDIR="$(dirname "$BIN")"
+export LD_LIBRARY_PATH="$LIBDIR:${LD_LIBRARY_PATH:-}"
+
+GGUF="$MODEL_DIR/gpt-oss-20b-MXFP4.gguf"
+if [[ ! -f "$GGUF" ]]; then
+  GGUF="$(find "$MODEL_DIR" -name 'gpt-oss-20b-MXFP4.gguf' -type f 2>/dev/null | head -1 || true)"
+fi
+[[ -n "${GGUF:-}" && -f "$GGUF" ]] || {
+  echo "Missing GGUF under $MODEL_DIR" >&2
+  exit 1
+}
+
+python3 - <<PY
+import json, time
+from pathlib import Path
+root = Path(r"$MODEL_DIR")
+gguf = Path(r"$GGUF")
+for _ in range(120):
+    if (root / ".verified.json").exists():
+        break
+    time.sleep(1)
+else:
+    raise SystemExit("The verified GPT-OSS model mount is not ready.")
+manifest = json.loads((root / ".verified.json").read_text())
+for item in manifest["files"]:
+    if gguf.stat().st_size != item["size"]:
+        raise SystemExit("The GPT-OSS checkpoint is missing or incomplete.")
+print("verified", gguf, "size", gguf.stat().st_size)
+PY
+
+# 8GB-class GPUs: keep GPU layers modest; MoE experts spill to RAM.
+N_GPU_LAYERS="${GPT_OSS_GPU_LAYERS:-24}"
+CTX="${GPT_OSS_CTX:-16384}"
+HOST="${GPT_OSS_HOST:-127.0.0.1}"
+PORT="${GPT_OSS_PORT:-8080}"
+THREADS="${GPT_OSS_THREADS:-$(nproc)}"
+
+if ss -tlnH "sport = :$PORT" 2>/dev/null | grep -q .; then
+  echo "WARN: something already listens on $HOST:$PORT — llama-server may fail to bind." >&2
+fi
+
+exec "$BIN" \
+  --model "$GGUF" \
+  --alias gpt-oss-20b \
+  --n-gpu-layers "$N_GPU_LAYERS" \
+  --ctx-size "$CTX" \
+  --parallel 1 \
+  --batch-size 512 \
+  --ubatch-size 128 \
+  --threads "$THREADS" \
+  --threads-batch "$THREADS" \
+  --jinja \
+  --reasoning-budget 128 \
+  --host "$HOST" \
+  --port "$PORT" \
+  "$@"

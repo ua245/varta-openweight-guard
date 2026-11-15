@@ -3,3 +3,17 @@ __pycache__/
 .pytest_cache/
 audit.jsonl
 .env
+.venv/
+.opencode/
+llm_map.json
+
+# bank-mail runtime
+bank-mail/data/
+bank-mail/logs/
+
+# local-ai runtime
+local-ai/validation.local.json
+local-ai/__pycache__/
+
+# cview / misc
+*.pid

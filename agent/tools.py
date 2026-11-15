@@ -36,11 +36,12 @@ SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8"}
 
 
 class Tools:
-    def __init__(self, workspace, issues: dict, host_map: dict | None = None, sandbox=None):
+    def __init__(self, workspace, issues: dict, host_map: dict | None = None, sandbox=None, vision=None):
         self.ws = Path(workspace)
         self.sandbox = sandbox          # guard.sandbox.DockerSandbox, or None = run on the host
         self.issues = issues            # {number: text}, stub for the GitHub API
         self.host_map = host_map or {}  # demo DNS: hostname -> "127.0.0.1:port"
+        self.vision = vision            # optional separate vision LLM for view_image
         self.pending_images: list[str] = []   # data URLs to show the model after this step
 
     def execute(self, name: str, args: dict) -> str:

@@ -1,0 +1,23 @@
+[Unit]
+Description=Local GPT-OSS 20B CUDA inference (repo-aligned OpenAI API)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Override paths in a drop-in if your layout differs:
+#   systemctl --user edit gpt-oss-server
+Environment=GPT_OSS_MODEL_DIR=%h/ai/models/gpt-oss-20b
+Environment=LLAMA_ROOT=%h/ai/llama.cpp
+Environment=GPT_OSS_GPU_LAYERS=24
+Environment=GPT_OSS_CTX=16384
+Environment=GPT_OSS_HOST=127.0.0.1
+Environment=GPT_OSS_PORT=8080
+ExecStart=%h/imperial_hackathon_submission/local-ai/gpt-oss-server
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=600
+TimeoutStopSec=45
+
+[Install]
+WantedBy=default.target

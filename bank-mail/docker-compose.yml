@@ -1,0 +1,15 @@
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: bank-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP (send into the bank inbox)
+      - "127.0.0.1:8025:8025"   # Mailpit UI + REST API
+    environment:
+      MP_MAX_MESSAGES: "500"
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+      MP_UI_AUTH_FILE: ""
+    volumes:
+      - ./data:/data

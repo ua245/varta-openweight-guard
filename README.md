@@ -6,15 +6,19 @@ Open-weight coding agents get no safety layer by default. This guard gives a loc
 
 ## Setup
 
+Host bring-up gotchas (ARM Vulkan snapshot vs CUDA, port `:8080`, VRAM): [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md). Quick start: `bash scripts/spin-up-guard-core.sh`.
+
 | Component | Choice |
 |---|---|
-| Model server | Ubuntu 24.04, GLM 5.2, OpenAI-compatible API (`/v1/chat/completions` with tool calling) |
+| Model server | GPT-OSS 20B MXFP4 on `http://127.0.0.1:8080/v1` (CUDA x86 path: `local-ai/`) |
 | Agent | Our own minimal loop (Python, no framework) |
 | Guard | Deterministic Python layer that every tool call goes through (no LLM in the enforcement path) |
 | Shell | Runs in Docker, with only the project mounted |
+| Mail desk (optional) | `bank-mail/` — Mailpit + summarize/OCR against the same model |
+| ASCII coding view | `cview/` / `scripts/cview` (no OpenCode required) |
 
 ```
-[GLM 5.2 server]  <- proposes tool calls only
+[gpt-oss-20b :8080]  <- proposes tool calls only
        │
 [Agent loop] ──► [Guard] ──► files / Docker shell / network
                     │

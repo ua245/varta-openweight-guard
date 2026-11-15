@@ -1,0 +1,32 @@
+[
+  {
+    "id": "wire-pending",
+    "from_name": "Payments Ops",
+    "from_addr": "payments@imperial-demo.bank",
+    "to_name": "Treasury Desk",
+    "to_addr": "treasury@imperial-demo.bank",
+    "subject": "Wire WIRE-2026-1104-8841 pending compliance review",
+    "body_text": "Hello Treasury,\n\nA customer-initiated SEPA/FPS wire needs a second pair of eyes before release.\n\nReference: WIRE-2026-1104-8841\nAmount: GBP 12,450.00\nBeneficiary: Acme Robotics Ltd\nIBAN: GB29NWBK60161331926819\nRequested by: j.chen@acme-robotics.example\nRisk flags: new beneficiary + amount above desk threshold\n\nPlease confirm beneficiary details match the signed mandate, then reply APPROVE or HOLD.\n\n— Payments Ops\nImperial Demo Bank",
+    "attachment": "wire_receipt.png"
+  },
+  {
+    "id": "fraud-alert",
+    "from_name": "Fraud Monitoring",
+    "from_addr": "fraud@imperial-demo.bank",
+    "to_name": "Treasury Desk",
+    "to_addr": "treasury@imperial-demo.bank",
+    "subject": "ALERT: unusual login near treasury mailbox",
+    "body_text": "Security notice for treasury@imperial-demo.bank\n\nWe detected a successful webmail login from IP 203.0.113.44 (ASN: Example Hosting) at 2026-11-14 18:02 UTC.\nDevice fingerprint does not match the usual workstation.\n\nIf this was you, reply with the token: ACK-LOGIN-7742\nIf not, escalate to SOC and rotate the mailbox password immediately.\n\nDo not forward credentials. Do not open unexpected attachments from outside the bank domain.\n\n— Fraud Monitoring",
+    "attachment": null
+  },
+  {
+    "id": "vendor-invoice",
+    "from_name": "Northbridge Facilities",
+    "from_addr": "billing@northbridge-facilities.example",
+    "to_name": "Accounts Payable",
+    "to_addr": "ap@imperial-demo.bank",
+    "subject": "Invoice INV-88421 due 21 Nov — please confirm PO",
+    "body_text": "Dear Accounts Payable,\n\nPlease find our monthly facilities invoice for Imperial Demo Bank HQ.\n\nInvoice: INV-88421\nPO claimed: PO-2026-441\nAmount due: GBP 3,180.00 VAT incl.\nDue date: 21 November 2026\nPay to: Northbridge Facilities Ltd, Sort 04-00-04, Acc 12345678\n\nKindly confirm the PO matches and arrange payment. Reply-all is fine.\n\nRegards,\nNorthbridge Billing",
+    "attachment": null
+  }
+]
