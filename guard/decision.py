@@ -7,6 +7,8 @@ class Decision:
     reason: str = ""
     args: dict = field(default_factory=dict)   # possibly rewritten args (secrets injected)
     handover: bool = False
+    sensitive: bool = False      # tainted-and-sensitive: goes to the researcher when one is attached
+    research: dict | None = None # researcher verdict + trace, for the audit log
 
     @property
     def allowed(self) -> bool:
@@ -19,3 +21,7 @@ def allow(args=None):
 
 def deny(reason):
     return Decision("deny", reason)
+
+
+def deny_sensitive(reason):
+    return Decision("deny", reason, sensitive=True)

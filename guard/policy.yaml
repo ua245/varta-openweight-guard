@@ -1,26 +1,21 @@
 # Default policy shipped with the guard.
 mode: autonomous            # autonomous: "ask" -> deny with reason. interactive: prompt the human.
 network:
-  allow: [pypi.org, github.com, api.github.com, api.mybank-internal.com]
-  unknown: ask              # becomes deny when the session is tainted
+  allow: [pypi.org, github.com, api.github.com, api.mybank-internal.com, api.tavily.com]
+  unknown: ask              # ambiguous: goes to the researcher agent when one is attached
 files:
   deny: [.env, ".env.*", "*.pem", "*.key", ~/.ssh, ~/.aws]
   write_only_in: ./
 tainted_session:
-  deny: [git_push, network_unknown, install_package]   # legacy: all denied when no researcher
-  # Two tiers once a researcher agent is configured:
-  hard_deny: [network_unknown]                         # exfil: NEVER delegated, even to the researcher
-  delegate: [git_push, install_package]                # researcher may approve these (gray zone)
-# Fail closed: any tool NOT listed here taints the session when it returns content.
-# Also tainting: read_file outside the project, shell commands that fetch from the network.
-trusted_sources: [read_file, write_file, list_files, run_tests, shell]
+  # Sensitive once tainted: reviewed by the researcher agent, denied outright without one.
+  deny: [git_push, network_unknown, install_package]
+untrusted_sources: [http_request, read_github_issue, read_external_file, tavily_search, verify_claim, view_image]
 handover_after_denials: 3
-
-# Optional layer 2 (see guard/detector.py). Can only tighten: taint + warn, never allow.
-# "auto" = on when ADAPTION_API_KEY is set. Content is sent to an external API, secrets redacted.
+# Optional layer 2 (guard/detector.py). Tighten-only: taint + warn, never allow.
+# "auto" = on when ADAPTION_API_KEY is set. Off by default.
 detector:
   enabled: auto
   provider: adaption
   model: "stack:uvx"
   timeout: 60
-  scan_tools: [read_file, read_github_issue, http_request, shell]
+  scan_tools: [read_file, read_github_issue, http_request, shell, tavily_search]

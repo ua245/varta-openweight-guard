@@ -17,3 +17,6 @@ local-ai/__pycache__/
 
 # cview / misc
 *.pid
+audit_proxy_test.jsonl
+audit_tavily_test.jsonl
+*_test.jsonl

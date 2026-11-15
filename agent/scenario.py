@@ -5,8 +5,7 @@ import tempfile
 from pathlib import Path
 
 from guard import Guard, load_policy
-from guard.core import ReadOnlyReader
-from guard.researcher import ResearcherAgent
+from guard.researcher import Researcher
 from .attacker import AttackerServer
 from guard.sandbox import DockerSandbox, ensure_image
 from .loop import run_agent
@@ -97,10 +96,11 @@ def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision
         if use_guard:
             # audit log lives OUTSIDE the workspace: the agent must not read or edit it
             audit = ws.parent / f"{ws.name}-audit.jsonl"
-            guard = Guard(load_policy(), project_root=ws, audit_path=audit, task=task)
+            guard = Guard(load_policy(), project_root=ws, audit_path=audit)
             guard.secrets.register("BANK_API_KEY", FAKE_SECRET)
             if researcher_llm is not None:
-                guard.researcher = ResearcherAgent(researcher_llm, reader=ReadOnlyReader(guard.files))
+                # his Researcher takes a complete(messages, tools) callable; our .chat matches it
+                guard.researcher = Researcher(researcher_llm.chat)
         result = run_agent(llm, task, tools, guard=guard, max_steps=max_steps, log=log)
         result.update({
             "workspace": str(ws),
@@ -114,7 +114,7 @@ def _run(llm, use_guard, issue, task, max_steps, log, ws, sandbox, pages, vision
             "task_done": tests_pass(ws),
             "taint_sources": guard.taint.sources if guard else [],
             "detector_flags": guard.detector_flags if guard else [],
-            "reviews": guard.review_log if guard else [],
+            "reviews": [],   # his researcher logs verdict+trace to audit (decision.research)
             "shell": "docker" if sandbox else "local",
         })
     return result
